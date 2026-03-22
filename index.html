@@ -3,540 +3,443 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>OMS — Interner Bereich</title>
+<title>OMS — Servicerapport</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=DM+Mono:wght@400;500&display=swap');
 :root{
-  --bg:#0f0f0f;--bg2:#171717;--bg3:#1f1f1f;--bg4:#252525;
+  --bg:#0f0f0f;--bg2:#171717;--bg3:#1f1f1f;
   --border:#2a2a2a;--border2:#333;
-  --text:#f0f0f0;--text2:#999;--text3:#555;
+  --text:#f0f0f0;--text2:#888;--text3:#555;
   --accent:#e8e0d0;--accent2:#c8b89a;
   --red:#e05c4a;--green:#4caf7d;--blue:#5b8def;--orange:#e8a04a;--purple:#9b5be8;
-  --r:12px;--rsm:8px;--rxs:5px;
+  --r:12px;--rsm:8px;
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
-html,body{min-height:100%;background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-size:15px;}
-button,input,select,textarea{font-family:inherit;}
-button{cursor:pointer;}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-size:15px;}
+button{font-family:'DM Sans',sans-serif;cursor:pointer;}
 
 /* LOGIN */
-#login-screen{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px;}
-.lbox{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:32px;width:100%;max-width:380px;}
-.llogo{display:flex;align-items:center;gap:12px;margin-bottom:28px;}
-.lsq{width:42px;height:42px;background:var(--accent);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#111;flex-shrink:0;}
-.ltitle{font-size:18px;font-weight:500;color:var(--accent);}
+#ls{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:24px;}
+.lc{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:36px;width:100%;max-width:400px;}
+.ll{display:flex;align-items:center;gap:12px;margin-bottom:32px;}
+.lb{background:var(--accent);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;color:#111;flex-shrink:0;}
+.lbig{width:40px;height:40px;} .lsml{width:32px;height:32px;font-size:11px;}
+.ltxt{font-size:18px;font-weight:500;color:var(--accent);}
 .lsub{font-size:13px;color:var(--text3);margin-top:2px;}
-.lerr{display:none;background:rgba(224,92,74,.12);border:1px solid var(--red);border-radius:var(--rxs);padding:10px 14px;font-size:13px;color:var(--red);margin-bottom:14px;}
+.lerr{background:rgba(224,92,74,.1);border:1px solid var(--red);border-radius:6px;padding:10px 14px;font-size:13px;color:var(--red);margin-bottom:16px;display:none;}
 
 /* APP */
 #app{display:none;flex-direction:column;min-height:100vh;}
 #app.on{display:flex;}
-nav{display:flex;align-items:center;justify-content:space-between;padding:0 16px;height:56px;background:var(--bg2);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100;flex-shrink:0;}
-.navl{display:flex;align-items:center;gap:10px;}
-.lsm{width:30px;height:30px;background:var(--accent);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#111;}
-.navr{display:flex;align-items:center;gap:8px;}
-.rbdg{background:var(--bg3);border:1px solid var(--border2);border-radius:20px;padding:3px 10px;font-size:11px;color:var(--text2);}
-.bout{background:transparent;border:1px solid var(--border2);border-radius:var(--rxs);color:var(--text3);font-size:12px;padding:5px 10px;transition:all .15s;}
-.bout:hover{color:var(--red);border-color:var(--red);}
-.tabs{display:flex;background:var(--bg2);border-bottom:1px solid var(--border);overflow-x:auto;flex-shrink:0;scrollbar-width:none;}
-.tabs::-webkit-scrollbar{display:none;}
-.tab{padding:0 18px;height:46px;font-size:13px;font-weight:500;color:var(--text3);background:transparent;border:none;border-bottom:2px solid transparent;white-space:nowrap;transition:all .15s;flex-shrink:0;}
-.tab:hover{color:var(--text2);}
-.tab.active{color:var(--accent);border-bottom-color:var(--accent2);}
-.tab.hidden{display:none;}
+nav{display:flex;align-items:center;justify-content:space-between;padding:0 16px;height:58px;background:var(--bg2);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100;flex-shrink:0;}
+.nl{display:flex;align-items:center;gap:10px;}
+.nr{display:flex;align-items:center;gap:8px;}
+.nbdg{background:var(--bg3);border:1px solid var(--border2);border-radius:20px;padding:3px 10px;font-size:11px;color:var(--text2);}
+.bo{background:transparent;border:1px solid var(--border2);border-radius:6px;color:var(--text3);font-size:12px;padding:5px 10px;transition:all .15s;}
+.bo:hover{color:var(--red);border-color:var(--red);}
+
+/* TABS */
+.tbar{display:flex;background:var(--bg2);border-bottom:1px solid var(--border);overflow-x:auto;flex-shrink:0;scrollbar-width:none;}
+.tbar::-webkit-scrollbar{display:none;}
+.tbtn{padding:0 18px;height:48px;font-size:13px;font-weight:500;color:var(--text3);background:transparent;border:none;border-bottom:2px solid transparent;white-space:nowrap;transition:all .15s;flex-shrink:0;}
+.tbtn:hover{color:var(--text2);}
+.tbtn.active{color:var(--accent);border-bottom-color:var(--accent2);}
+.tbtn.hidden{display:none;}
 
 /* PAGES */
-.page{display:none;padding:20px 16px 48px;max-width:940px;margin:0 auto;width:100%;}
-.page.active{display:block;}
-.ph{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:20px;gap:12px;flex-wrap:wrap;}
-.pt{font-size:20px;font-weight:500;color:var(--accent);margin-bottom:3px;}
-.ps{font-size:13px;color:var(--text3);}
+.pg{display:none;padding:20px 16px;max-width:900px;margin:0 auto;width:100%;}
+.pg.active{display:block;}
+
+/* SECTIONS */
+.sh{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:20px;gap:12px;flex-wrap:wrap;}
+.st{font-size:20px;font-weight:500;color:var(--accent);margin-bottom:3px;}
+.ss{font-size:13px;color:var(--text3);}
 
 /* CARDS */
 .card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:18px;margin-bottom:14px;}
-.card-t{font-size:11px;font-weight:500;color:var(--text3);text-transform:uppercase;letter-spacing:.8px;margin-bottom:14px;}
-.card-h{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;gap:8px;}
+.ct{font-size:11px;font-weight:500;color:var(--text3);text-transform:uppercase;letter-spacing:.8px;margin-bottom:14px;}
+.ch{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
 
 /* FORMS */
 .fg{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
 .fi{display:flex;flex-direction:column;gap:6px;}
 .fi.s2{grid-column:span 2;}
 label{font-size:12px;color:var(--text2);font-weight:500;}
-input,textarea,select{background:var(--bg3);border:1px solid var(--border2);border-radius:var(--rsm);padding:11px 13px;color:var(--text);font-size:15px;transition:border-color .15s;outline:none;width:100%;-webkit-appearance:none;appearance:none;-webkit-text-fill-color:var(--text);box-shadow:0 0 0 1000px var(--bg3) inset;caret-color:var(--text);}
-input:disabled,textarea:disabled{-webkit-text-fill-color:var(--text2);box-shadow:0 0 0 1000px var(--bg3) inset;opacity:0.7;}
+input,textarea,select{
+  background:var(--bg3);border:1px solid var(--border2);border-radius:var(--rsm);
+  padding:11px 13px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:15px;
+  transition:border-color .15s;outline:none;width:100%;
+  -webkit-appearance:none;-webkit-text-fill-color:var(--text);
+  box-shadow:0 0 0 1000px var(--bg3) inset;caret-color:var(--text);
+}
 input:focus,textarea:focus,select:focus{border-color:var(--accent2);}
-textarea{resize:vertical;min-height:80px;line-height:1.5;}
-select option{background:var(--bg3);color:var(--text);}
-select{color:var(--text);-webkit-text-fill-color:var(--text);}
+input:disabled,textarea:disabled{-webkit-text-fill-color:var(--text3);opacity:.6;}
+textarea{resize:vertical;min-height:90px;box-shadow:none;}
+select option{background:var(--bg3);}
+select{-webkit-text-fill-color:var(--text);}
 
 /* RADIO */
 .rg{display:flex;gap:8px;flex-wrap:wrap;}
-.rb{padding:10px 16px;border-radius:var(--rsm);border:1px solid var(--border2);font-size:14px;cursor:pointer;color:var(--text2);transition:all .15s;user-select:none;background:transparent;}
+.rb{padding:10px 16px;border-radius:var(--rsm);border:1px solid var(--border2);font-size:14px;cursor:pointer;color:var(--text2);transition:all .15s;user-select:none;}
 .rb.on{border-color:var(--accent2);color:var(--accent);background:rgba(200,184,154,.08);}
 
 /* BUTTONS */
-.btn{padding:11px 18px;border-radius:var(--rsm);border:1px solid var(--border2);font-size:14px;font-weight:500;transition:all .15s;display:inline-flex;align-items:center;gap:7px;white-space:nowrap;background:transparent;color:var(--text2);}
-.btn-p{background:var(--accent) !important;color:#111 !important;border-color:var(--accent);-webkit-text-fill-color:#111 !important;}
-.btn-p:hover{background:var(--accent2) !important;}ground:var(--accent2);}
-.btn-g{color:var(--text2);}
-.btn-g:hover{background:var(--bg3);color:var(--text);}
-.btn-d{color:var(--red) !important;border-color:transparent;}
-.btn-d:hover{background:rgba(224,92,74,.1);}
-.btn-s{background:var(--green);color:#fff !important;border-color:var(--green);-webkit-text-fill-color:#fff !important;}
-.btn-s:hover{opacity:.9;}
-.btn-warn{background:var(--orange);color:#fff !important;border-color:var(--orange);-webkit-text-fill-color:#fff !important;}
-.btn-warn:hover{opacity:.9;}
+.btn{padding:11px 18px;border-radius:var(--rsm);border:1px solid var(--border2);font-size:14px;font-weight:500;transition:all .15s;display:inline-flex;align-items:center;gap:7px;white-space:nowrap;}
+.bp{background:var(--accent)!important;color:#111!important;border-color:var(--accent);-webkit-text-fill-color:#111!important;}
+.bp:hover{background:var(--accent2)!important;}
+.bg2b{background:transparent;color:var(--text2);}
+.bg2b:hover{background:var(--bg3);color:var(--text);}
+.bd{background:transparent;color:var(--red);border-color:transparent;}
+.bd:hover{background:rgba(224,92,74,.1);}
+.bs{background:var(--green)!important;color:#fff!important;border-color:var(--green);-webkit-text-fill-color:#fff!important;}
+.bs:hover{opacity:.9;}
 .sm{padding:7px 13px;font-size:13px;}
 .brow{display:flex;gap:10px;align-items:center;flex-wrap:wrap;}
 
-/* TABLES */
+/* TABLE */
 .tw{overflow-x:auto;-webkit-overflow-scrolling:touch;}
 table{width:100%;border-collapse:collapse;font-size:14px;}
-th{text-align:left;padding:9px 10px;color:var(--text3);font-weight:500;font-size:11px;text-transform:uppercase;letter-spacing:.6px;border-bottom:1px solid var(--border);white-space:nowrap;}
-td{padding:9px 10px;border-bottom:1px solid var(--border);color:var(--text);vertical-align:middle;}
+th{text-align:left;padding:10px 12px;color:var(--text3);font-weight:500;font-size:11px;text-transform:uppercase;letter-spacing:.6px;border-bottom:1px solid var(--border);white-space:nowrap;}
+td{padding:10px 12px;border-bottom:1px solid var(--border);color:var(--text);vertical-align:middle;}
 tr:last-child td{border-bottom:none;}
 td input,td select{background:transparent;border:none;border-bottom:1px solid var(--border2);border-radius:0;padding:6px 2px;font-size:14px;box-shadow:none;-webkit-text-fill-color:var(--text);}
 td input:focus,td select:focus{border-bottom-color:var(--accent2);outline:none;}
 
 /* BADGES */
 .bdg{display:inline-flex;align-items:center;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:500;white-space:nowrap;}
-.b-blue{background:rgba(91,141,239,.15);color:var(--blue);}
-.b-green{background:rgba(76,175,125,.15);color:var(--green);}
-.b-orange{background:rgba(232,160,74,.15);color:var(--orange);}
-.b-purple{background:rgba(155,91,232,.15);color:var(--purple);}
-.b-red{background:rgba(224,92,74,.15);color:var(--red);}
+.bbl{background:rgba(91,141,239,.15);color:var(--blue);}
+.bgr{background:rgba(76,175,125,.15);color:var(--green);}
+.bpu{background:rgba(155,91,232,.15);color:var(--purple);}
 
 /* STATS */
 .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px;}
-.stat{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:16px;}
-.stat-l{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.6px;margin-bottom:6px;}
-.stat-v{font-size:22px;font-weight:500;color:var(--accent);font-family:'DM Mono',monospace;}
-
-/* CATEGORY GRID */
-.kat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;margin-bottom:16px;}
-.kat-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:20px 16px;cursor:pointer;transition:all .15s;text-align:center;position:relative;}
-.kat-card:hover{border-color:var(--accent2);background:var(--bg3);}
-.kat-icon{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;margin:0 auto 12px;}
-.kat-name{font-size:14px;font-weight:500;color:var(--text);margin-bottom:4px;}
-.kat-count{font-size:12px;color:var(--text3);}
-.kat-warn{position:absolute;top:8px;right:8px;width:8px;height:8px;background:var(--red);border-radius:50%;}
-.kat-card-alle{border-style:dashed;}
+.sc2{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:16px;}
+.slbl{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.6px;margin-bottom:6px;}
+.sval{font-size:22px;font-weight:500;color:var(--accent);font-family:'DM Mono',monospace;}
 
 /* LAGER TABLE */
-.lt-wrap{border:1px solid var(--border);border-radius:var(--r);overflow:hidden;}
-.lt-hdr,.lt-row{display:grid;gap:8px;padding:11px 14px;}
-.lt-hdr{grid-template-columns:2fr 1fr 1fr 90px 96px 80px 44px;background:var(--bg3);font-size:11px;font-weight:500;color:var(--text3);text-transform:uppercase;letter-spacing:.6px;}
-.lt-row{grid-template-columns:2fr 1fr 1fr 90px 96px 80px 44px;border-top:1px solid var(--border);align-items:center;transition:background .1s;}
-.lt-row:hover{background:var(--bg3);}
-.lt-name{font-size:14px;font-weight:500;}
-.lt-artnr{font-size:12px;color:var(--text3);margin-top:2px;}
-.lt-qty{font-size:14px;font-weight:500;font-family:'DM Mono',monospace;}
-.lt-qty.low{color:var(--red);}
-.lt-qty.ok{color:var(--green);}
-.lt-prc{font-size:14px;font-weight:500;color:var(--accent);font-family:'DM Mono',monospace;}
-.kpill{display:inline-block;padding:2px 9px;border-radius:20px;font-size:11px;font-weight:500;}
-.qty-ctrl{display:flex;align-items:center;gap:4px;}
-.qty-btn{width:26px;height:26px;border-radius:4px;border:1px solid var(--border2);background:var(--bg3);color:var(--text2);font-size:16px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;transition:all .15s;}
-.qty-btn:hover{border-color:var(--accent2);color:var(--accent);}
+.lw{border:1px solid var(--border);border-radius:var(--r);overflow:hidden;}
+.lh{display:grid;grid-template-columns:2fr 1fr 1fr 80px 90px 44px;padding:10px 16px;background:var(--bg3);font-size:11px;font-weight:500;color:var(--text3);text-transform:uppercase;letter-spacing:.6px;gap:8px;}
+.lr{display:grid;grid-template-columns:2fr 1fr 1fr 80px 90px 44px;padding:13px 16px;border-top:1px solid var(--border);gap:8px;align-items:center;transition:background .1s;}
+.lr:hover{background:var(--bg3);}
+.ln{font-size:14px;font-weight:500;}
+.lm{font-size:12px;color:var(--text3);margin-top:2px;}
+.lk{font-size:12px;}
+.lmr{font-size:12px;color:var(--text2);}
+.lq{font-size:14px;font-weight:500;font-family:'DM Mono',monospace;}
+.lq.low{color:var(--red);}
+.lq.ok{color:var(--green);}
+.lp2{font-size:14px;font-weight:500;color:var(--accent);font-family:'DM Mono',monospace;}
+.la{display:flex;justify-content:flex-end;}
+.kpill{display:inline-block;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:500;}
 
 /* SIGNATURE */
-.sig-box{border:1px solid var(--border2);border-radius:var(--rsm);overflow:hidden;}
-.sig-bar{padding:8px 12px;background:var(--bg3);font-size:11px;color:var(--text3);display:flex;justify-content:space-between;align-items:center;}
-.sig-clr{background:none;border:none;color:var(--text3);font-size:11px;cursor:pointer;padding:2px 6px;border-radius:4px;}
-.sig-clr:hover{color:var(--red);}
+.sw{border:1px solid var(--border2);border-radius:var(--rsm);overflow:hidden;}
+.sb{padding:8px 12px;background:var(--bg3);font-size:11px;color:var(--text3);display:flex;justify-content:space-between;align-items:center;}
+.sc{background:none;border:none;color:var(--text3);font-size:11px;cursor:pointer;font-family:inherit;}
+.sc:hover{color:var(--red);}
 canvas{display:block;cursor:crosshair;touch-action:none;width:100%;background:#111;}
 
-/* AW / FZ */
-.aw-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);}
-.aw-row:last-child{border:none;}
-.aw-info{flex:1;min-width:0;}
-.aw-name{font-size:14px;font-weight:500;}
-.aw-rolle{font-size:11px;color:var(--text3);margin-top:1px;}
-.aw-rate{font-size:12px;color:var(--text2);font-family:'DM Mono',monospace;text-align:right;min-width:80px;}
-.fz-row{display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:8px;border:1px solid var(--border);margin-bottom:6px;cursor:pointer;transition:all .15s;background:var(--bg3);}
-.fz-row:hover{border-color:var(--border2);}
-.fz-row.selected{border-color:var(--accent2);background:rgba(200,184,154,.08);}
-.fz-row input[type=checkbox]{display:none;}
-.fz-lbl{flex:1;font-size:14px;color:var(--text2);transition:color .15s;}
-.fz-row.selected .fz-lbl{color:var(--text);}
-.fz-preis{font-size:12px;color:var(--text3);font-family:'DM Mono',monospace;min-width:70px;text-align:right;}
-.fz-ind{width:20px;height:20px;border-radius:5px;border:2px solid var(--border2);flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .15s;font-size:13px;color:transparent;background:var(--bg3);}
-.fz-row.selected .fz-ind{border-color:var(--accent2);background:var(--accent2);color:#111;}
-.fz-h{width:70px;flex-shrink:0;}
+/* LIST ITEMS */
+.li{display:flex;align-items:center;justify-content:space-between;padding:13px 0;border-bottom:1px solid var(--border);gap:12px;}
+.li:last-child{border:none;}
+.lil{flex:1;min-width:0;}
+.lik{font-size:14px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.lim{font-size:12px;color:var(--text2);margin-top:2px;}
+.lir{display:flex;align-items:center;gap:8px;flex-shrink:0;}
+
+/* AW */
+.aw{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);}
+.aw:last-child{border:none;}
+.awi{flex:1;min-width:0;}
+.awn{font-size:14px;font-weight:500;}
+.awr{font-size:11px;color:var(--text3);margin-top:1px;}
+.awa{font-size:12px;color:var(--text2);font-family:'DM Mono',monospace;min-width:80px;text-align:right;}
+
+/* FZ/HM ROWS — styled toggle cards */
+.fzr{display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:8px;border:1px solid var(--border);margin-bottom:6px;cursor:pointer;transition:all .15s;background:var(--bg3);}
+.fzr:hover{border-color:var(--border2);}
+.fzr.sel{border-color:var(--accent2);background:rgba(200,184,154,.08);}
+.fzind{width:22px;height:22px;border-radius:5px;border:2px solid var(--border2);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:13px;color:transparent;background:var(--bg3);transition:all .15s;}
+.fzr.sel .fzind{border-color:var(--accent2);background:var(--accent2);color:#111;}
+.fzl{flex:1;font-size:14px;color:var(--text2);transition:color .15s;}
+.fzr.sel .fzl{color:var(--text);}
+.fzp{font-size:13px;color:var(--text3);font-family:'DM Mono',monospace;min-width:80px;text-align:right;flex-shrink:0;}
 
 /* TOTALS */
-.tot-row{display:flex;justify-content:space-between;padding:7px 0;font-size:14px;}
-.tot-row.fin{font-size:17px;font-weight:600;color:var(--accent);border-top:1px solid var(--border);padding-top:12px;margin-top:4px;}
-
-/* RAPPORT LIST */
-.r-item{display:flex;align-items:center;padding:13px 0;border-bottom:1px solid var(--border);gap:12px;}
-.r-item:last-child{border:none;}
-.r-il{flex:1;min-width:0;}
-.r-ik{font-size:14px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.r-im{font-size:12px;color:var(--text2);margin-top:2px;}
-.r-ir{display:flex;align-items:center;gap:8px;flex-shrink:0;}
-
-/* LOW STOCK ALERT */
-.alert-box{background:rgba(224,92,74,.08);border:1px solid rgba(224,92,74,.3);border-radius:var(--r);padding:14px 16px;margin-bottom:14px;display:none;}
-.alert-box.show{display:block;}
-.alert-title{font-size:13px;font-weight:500;color:var(--red);margin-bottom:8px;}
-.alert-item{font-size:13px;color:var(--text2);padding:3px 0;}
+.tr2{display:flex;justify-content:space-between;padding:7px 0;font-size:14px;}
+.tr2.fin{font-size:17px;font-weight:500;color:var(--accent);border-top:1px solid var(--border);padding-top:12px;margin-top:4px;}
 
 /* TOAST */
-.toast{position:fixed;bottom:20px;right:16px;left:16px;max-width:380px;margin:0 auto;z-index:9999;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--r);padding:12px 18px;font-size:13px;transform:translateY(100px);opacity:0;transition:all .25s;pointer-events:none;}
-@media(min-width:500px){.toast{left:auto;right:20px;}}
+.toast{position:fixed;bottom:24px;right:16px;left:16px;max-width:380px;margin:0 auto;z-index:999;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--r);padding:13px 18px;font-size:13px;color:var(--text);transform:translateY(100px);opacity:0;transition:all .25s;pointer-events:none;}
+@media(min-width:500px){.toast{left:auto;right:24px;}}
 .toast.show{transform:translateY(0);opacity:1;}
 .toast.ok{border-color:var(--green);color:var(--green);}
 .toast.er{border-color:var(--red);color:var(--red);}
 
-/* MODALS */
-.modal-bg{display:none;position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.75);align-items:flex-end;justify-content:center;}
-@media(min-width:600px){.modal-bg{align-items:center;padding:20px;}}
-.modal-bg.open{display:flex;}
-.modal{background:var(--bg2);border:1px solid var(--border2);border-radius:var(--r) var(--r) 0 0;padding:24px;width:100%;max-width:560px;max-height:92vh;overflow-y:auto;}
+/* MODAL */
+.mb{display:none;position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.75);align-items:flex-end;justify-content:center;}
+@media(min-width:600px){.mb{align-items:center;padding:24px;}}
+.mb.open{display:flex;}
+.modal{background:var(--bg2);border:1px solid var(--border2);border-radius:var(--r) var(--r) 0 0;padding:24px;width:100%;max-width:520px;max-height:90vh;overflow-y:auto;}
 @media(min-width:600px){.modal{border-radius:var(--r);}}
-.modal-title{font-size:16px;font-weight:500;color:var(--accent);margin-bottom:18px;}
+.mt{font-size:16px;font-weight:500;margin-bottom:18px;color:var(--accent);}
 
 /* SEARCH */
-.sw{position:relative;margin-bottom:14px;}
-.sw input{padding-left:38px;}
-.sic{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--text3);font-size:15px;pointer-events:none;}
+.sw2{position:relative;margin-bottom:14px;}
+.sw2 input{padding-left:38px;}
+.sic{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--text3);font-size:15px;pointer-events:none;}
 
 /* USER ITEMS */
-.u-item{display:flex;align-items:center;justify-content:space-between;padding:11px 0;border-bottom:1px solid var(--border);gap:12px;}
-.u-item:last-child{border:none;}
-.u-n{font-size:14px;font-weight:500;}
-.u-m{font-size:12px;color:var(--text2);margin-top:2px;}
+.ui{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border);gap:12px;}
+.ui:last-child{border:none;}
+.uii{flex:1;}
+.uin{font-size:14px;font-weight:500;}
+.uim{font-size:12px;color:var(--text2);margin-top:2px;}
+
 hr{border:none;border-top:1px solid var(--border);margin:16px 0;}
 
-/* BREADCRUMB */
-.bc{display:flex;align-items:center;gap:8px;margin-bottom:16px;font-size:13px;color:var(--text3);}
-.bc-link{cursor:pointer;color:var(--blue);}
-.bc-link:hover{text-decoration:underline;}
-.bc-sep{color:var(--text3);}
-
-/* RESPONSIVE */
-@media(max-width:720px){
+@media(max-width:640px){
   .fg{grid-template-columns:1fr;}
   .fi.s2{grid-column:span 1;}
   .stats{grid-template-columns:1fr 1fr;}
-  .lt-hdr{grid-template-columns:2fr 90px 96px 80px 44px;gap:6px;}
-  .lt-hdr .hc-kat,.lt-hdr .hc-mrk{display:none;}
-  .lt-row{grid-template-columns:2fr 90px 96px 80px 44px;gap:6px;}
-  .lt-row .lt-kat,.lt-row .lt-mrk{display:none;}
-  .sig-grid{grid-template-columns:1fr !important;}
-  .aw-rate{display:none;}
-  .kat-grid{grid-template-columns:repeat(auto-fill,minmax(130px,1fr));}
+  .sh{flex-direction:column;}
+  .lh{grid-template-columns:2fr 80px 90px 44px;gap:6px;}
+  .lh .hk,.lh .hm{display:none;}
+  .lr{grid-template-columns:2fr 80px 90px 44px;gap:6px;}
+  .lr .lk,.lr .lmr{display:none;}
+  .sigg{grid-template-columns:1fr!important;}
+  .awa{display:none;}
 }
-@media(max-width:420px){
-  .stats{grid-template-columns:1fr;}
-  .kat-grid{grid-template-columns:repeat(2,1fr);}
-  .navtitle{display:none;}
-}
+@media(max-width:400px){.stats{grid-template-columns:1fr;}.ntl{display:none;}}
 </style>
 </head>
 <body>
 
 <!-- LOGIN -->
-<div id="login-screen">
-  <div class="lbox">
-    <div class="llogo"><div class="lsq">OMS</div><div><div class="ltitle">Servicerapport</div><div class="lsub">Bitte anmelden</div></div></div>
-    <div class="lerr" id="lerr">Benutzername oder Passwort falsch.</div>
-    <div class="fi" style="margin-bottom:12px;"><label>Benutzername</label><input type="text" id="lu" autocapitalize="none" autocorrect="off" spellcheck="false"></div>
-    <div class="fi" style="margin-bottom:20px;"><label>Passwort</label><input type="password" id="lp" onkeydown="if(event.key==='Enter')doLogin()"></div>
-    <button class="btn btn-p" style="width:100%;justify-content:center;font-size:16px;padding:13px;" onclick="doLogin()">Anmelden</button>
+<div id="ls">
+  <div class="lc">
+    <div class="ll">
+      <div class="lb lbig">OMS</div>
+      <div><div class="ltxt">Servicerapport</div><div class="lsub">Bitte anmelden</div></div>
+    </div>
+    <div class="lerr" id="le">Falscher Benutzername oder Passwort.</div>
+    <div class="fi" style="margin-bottom:12px;"><label>Benutzername</label><input type="text" id="lu" autocapitalize="none" autocomplete="username"></div>
+    <div class="fi" style="margin-bottom:20px;"><label>Passwort</label><input type="password" id="lp" autocomplete="current-password" onkeydown="if(event.key==='Enter')login()"></div>
+    <button class="btn bp" style="width:100%;justify-content:center;" onclick="login()">Anmelden</button>
   </div>
 </div>
 
 <!-- APP -->
 <div id="app">
   <nav>
-    <div class="navl"><div class="lsm">OMS</div><span class="navtitle" style="font-size:14px;font-weight:500;color:var(--text2);">Servicerapport</span></div>
-    <div class="navr">
-      <span class="rbdg" id="nav-rolle"></span>
-      <span style="font-size:12px;color:var(--text3);" id="nav-name"></span>
-      <button class="bout" onclick="openPWModal()">PW</button>
-      <button class="bout" onclick="doLogout()">Abmelden</button>
+    <div class="nl">
+      <div class="lb lsml">OMS</div>
+      <span class="ntl" style="font-size:14px;font-weight:500;color:var(--text2);">Servicerapport</span>
+    </div>
+    <div class="nr">
+      <span class="nbdg" id="nro">—</span>
+      <span style="font-size:12px;color:var(--text3);" id="nnm"></span>
+      <button class="bo" onclick="logout()">Abmelden</button>
     </div>
   </nav>
-  <div class="tabs">
-    <button class="tab active" onclick="showTab('rapport')" id="tab-rapport">Rapport</button>
-    <button class="tab" onclick="showTab('lager')" id="tab-lager">Lager</button>
-    <button class="tab" onclick="showTab('archiv')" id="tab-archiv">Archiv</button>
-    <button class="tab hidden" onclick="showTab('kategorien')" id="tab-kategorien">Kategorien</button>
-    <button class="tab hidden" onclick="showTab('admin')" id="tab-admin">Admin</button>
+  <div class="tbar">
+    <button class="tbtn active" onclick="showTab('rapport','t-rap')" id="t-rap">Rapport</button>
+    <button class="tbtn" onclick="showTab('lager','t-lag')" id="t-lag">Lager</button>
+    <button class="tbtn" onclick="showTab('archiv','t-arc')" id="t-arc">Archiv</button>
+    <button class="tbtn hidden" onclick="showTab('admin','t-adm')" id="t-adm">Admin</button>
   </div>
 
   <!-- RAPPORT -->
-  <div class="page active" id="page-rapport">
-    <div class="ph">
-      <div><div class="pt" id="rap-page-title">Neuer Servicerapport</div><div class="ps">Felder ausfüllen · Material wählen · Unterschreiben</div></div>
-      <div class="brow">
-        <button class="btn btn-g sm hidden" id="btn-rap-cancel-edit" onclick="cancelEditRap()">Abbrechen</button>
-      </div>
-    </div>
+  <div class="pg active" id="page-rapport">
+    <div class="sh"><div><div class="st">Neuer Servicerapport</div><div class="ss">Felder ausfüllen, Material wählen, unterschreiben.</div></div></div>
     <div class="card">
-      <div class="card-t">Kundendaten</div>
+      <div class="ct">Kundendaten</div>
       <div class="fg">
         <div class="fi"><label>Datum</label><input type="date" id="r-dat"></div>
-        <div class="fi"><label>Projektnummer</label><input type="text" id="r-prj" placeholder="z.B. 2026-042"></div>
-        <div class="fi s2"><label>Kundenname / Firma</label><input type="text" id="r-knd" placeholder="Name oder Firma"></div>
-        <div class="fi s2"><label>Adresse / PLZ Ort</label><input type="text" id="r-adr"></div>
-        <div class="fi"><label>E-Mail</label><input type="email" id="r-mai"></div>
-        <div class="fi"><label>Telefon</label><input type="tel" id="r-tel"></div>
-        <div class="fi s2">
-          <label>Auftragstyp</label>
+        <div class="fi"><label>Projektnummer</label><input type="text" id="r-prj" placeholder="z.B. 2026-001"></div>
+        <div class="fi s2"><label>Kundenname</label><input type="text" id="r-knd" placeholder="Firma oder Name"></div>
+        <div class="fi s2"><label>Adresse / PLZ</label><input type="text" id="r-adr" placeholder="Strasse, PLZ Ort"></div>
+        <div class="fi"><label>E-Mail</label><input type="email" id="r-mai" placeholder="kunde@beispiel.ch"></div>
+        <div class="fi"><label>Telefon</label><input type="tel" id="r-tel" placeholder="+41 79 000 00 00"></div>
+        <div class="fi s2"><label>Auftragstyp</label>
           <div class="rg">
-            <div class="rb" onclick="setAT(this,'Folgeauftrag')">Folgeauftrag</div>
-            <div class="rb on" onclick="setAT(this,'Auftrag Abgeschlossen')">Abgeschlossen</div>
-            <div class="rb" onclick="setAT(this,'Zusatzauftrag')">Zusatzauftrag</div>
+            <div class="rb" onclick="setAt(this,'Folgeauftrag')">Folgeauftrag</div>
+            <div class="rb on" onclick="setAt(this,'Auftrag Abgeschlossen')">Abgeschlossen</div>
+            <div class="rb" onclick="setAt(this,'Zusatzauftrag')">Zusatzauftrag</div>
           </div>
         </div>
-        <div class="fi s2"><label>Notizen / Beschreibung der Arbeiten</label><textarea id="r-not" placeholder="Was wurde ausgeführt?"></textarea></div>
+        <div class="fi s2"><label>Notizen / Arbeiten</label><textarea id="r-not" placeholder="Was wurde ausgeführt?"></textarea></div>
       </div>
     </div>
-
     <div class="card">
-      <div class="card-h"><span class="card-t" style="margin:0;">Material &amp; Geräte</span></div>
-      <div class="tw"><table><thead><tr><th style="width:55px;">Anz.</th><th>Typ</th><th>Marke</th><th>Beschreibung</th><th style="width:88px;">CHF/Stk</th><th style="width:88px;">Total</th><th style="width:36px;"></th></tr></thead><tbody id="mat-tbody"></tbody></table></div>
+      <div class="ch"><span class="ct" style="margin:0;">Material</span></div>
+      <div class="tw"><table><thead><tr><th>Anz.</th><th>Typ</th><th>Marke</th><th>Beschreibung</th><th>CHF/Stk</th><th>Total</th><th></th></tr></thead><tbody id="mtb"></tbody></table></div>
       <div class="brow" style="margin-top:12px;">
-        <button class="btn btn-g sm" onclick="addMatRow()">+ Zeile</button>
-        <button class="btn btn-g sm" onclick="openLagerModal()">Aus Lager wählen</button>
+        <button class="btn bg2b sm" onclick="addRow()">+ Zeile</button>
+        <button class="btn bg2b sm" onclick="openLM()">Aus Lager wählen</button>
       </div>
     </div>
-
     <div class="card">
-      <div class="card-t">Arbeitsaufwand</div>
-      <div id="aw-list"></div>
+      <div class="ct">Arbeitsaufwand</div>
+      <div id="awl"></div>
+      <hr>
+      <div class="ct">Fahrzeugpauschale</div>
+      <div id="fzlist"></div>
+      <hr>
+      <div class="ct">Hilfsmittel</div>
+      <div id="hmlist"></div>
     </div>
-
     <div class="card">
-      <div class="card-t">Fahrzeugpauschale</div>
-      <div id="fz-list"></div>
+      <div class="ct">Kostenübersicht</div>
+      <div class="tr2"><span>Arbeitsaufwand</span><span id="ta" style="font-family:'DM Mono',monospace;">CHF 0.00</span></div>
+      <div class="tr2"><span>Material</span><span id="tm" style="font-family:'DM Mono',monospace;">CHF 0.00</span></div>
+      <div class="tr2"><span>Fahrzeug &amp; Hilfsmittel</span><span id="tf" style="font-family:'DM Mono',monospace;">CHF 0.00</span></div>
+      <div class="tr2 fin"><span>Total (exkl. MwSt.)</span><span id="tg" style="font-family:'DM Mono',monospace;">CHF 0.00</span></div>
     </div>
-
     <div class="card">
-      <div class="card-t">Hilfsmittel</div>
-      <div>
-        <div class="fz-row" id="row-hm1" onclick="toggleFzRow('hm1',24.5)"><div class="fz-ind" id="ind-hm1">✓</div><span class="fz-lbl">Klein- und Hilfsmaterial</span><span class="fz-preis">CHF 24.50</span></div>
-        <div class="fz-row" id="row-hm2" onclick="toggleFzRow('hm2',24.5)"><div class="fz-ind" id="ind-hm2">✓</div><span class="fz-lbl">Bohrmaterial / Montagematerial</span><span class="fz-preis">CHF 24.50</span></div>
-        <div class="fz-row" id="row-hm3" onclick="toggleFzRow('hm3',35)"><div class="fz-ind" id="ind-hm3">✓</div><span class="fz-lbl">Servicenotebook mit Lizenzen</span><span class="fz-preis">CHF 35.00</span></div>
-        <div class="fz-row" id="row-hm4" onclick="toggleFzRow('hm4',35)"><div class="fz-ind" id="ind-hm4">✓</div><span class="fz-lbl">Messgerät mit Messlizenz</span><span class="fz-preis">CHF 35.00</span></div>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="card-t">Kostenübersicht</div>
-      <div class="tot-row"><span>Arbeitsaufwand</span><span id="tot-a" style="font-family:'DM Mono',monospace;">CHF 0.00</span></div>
-      <div class="tot-row"><span>Material</span><span id="tot-m" style="font-family:'DM Mono',monospace;">CHF 0.00</span></div>
-      <div class="tot-row"><span>Fahrzeug &amp; Hilfsmittel</span><span id="tot-f" style="font-family:'DM Mono',monospace;">CHF 0.00</span></div>
-      <div class="tot-row fin"><span>Total (exkl. MwSt.)</span><span id="tot-g" style="font-family:'DM Mono',monospace;">CHF 0.00</span></div>
-    </div>
-
-    <div class="card">
-      <div class="card-t">Unterschriften</div>
-      <div class="sig-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+      <div class="ct">Unterschriften</div>
+      <div class="sigg" style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
         <div><div style="font-size:12px;color:var(--text2);margin-bottom:8px;font-weight:500;">Auftraggeber</div>
-          <div class="sig-box"><div class="sig-bar"><span>Mit Finger unterschreiben</span><button class="sig-clr" onclick="clrSig('sig-k')">Löschen</button></div><canvas id="sig-k" width="400" height="120"></canvas></div>
+          <div class="sw"><div class="sb"><span>Hier unterschreiben</span><button class="sc" onclick="clrSig('sk')">Löschen</button></div><canvas id="sk" width="400" height="130"></canvas></div>
         </div>
         <div><div style="font-size:12px;color:var(--text2);margin-bottom:8px;font-weight:500;">Techniker</div>
-          <div class="sig-box"><div class="sig-bar"><span>Mit Finger unterschreiben</span><button class="sig-clr" onclick="clrSig('sig-t')">Löschen</button></div><canvas id="sig-t" width="400" height="120"></canvas></div>
+          <div class="sw"><div class="sb"><span>Hier unterschreiben</span><button class="sc" onclick="clrSig('st')">Löschen</button></div><canvas id="st" width="400" height="130"></canvas></div>
         </div>
       </div>
     </div>
-
     <div class="brow" style="margin-bottom:40px;">
-      <button class="btn btn-s" id="btn-save-open" onclick="saveRapport(false)">Speichern (offen)</button>
-      <button class="btn btn-p" id="btn-save-close" onclick="saveRapport(true)">Abschliessen &amp; Lager abbuchen</button>
-      <button class="btn btn-g" onclick="doPDF()">PDF exportieren</button>
-      <button class="btn btn-g" onclick="resetR()">Zurücksetzen</button>
+      <button class="btn bs" onclick="saveR(false)">Speichern</button>
+      <button class="btn bp" onclick="saveR(true)">Abschliessen &amp; Lager abbuchen</button>
+      <button class="btn bg2b" onclick="doPDF()">PDF exportieren</button>
+      <button class="btn bg2b" onclick="resetR()">Zurücksetzen</button>
     </div>
   </div>
 
   <!-- LAGER -->
-  <div class="page" id="page-lager">
-    <div class="ph">
-      <div><div class="pt">Lagerverwaltung</div><div class="ps" id="lager-sub">Artikel nach Kategorie durchsuchen</div></div>
-      <div class="brow" id="lager-act-bar"></div>
+  <div class="pg" id="page-lager">
+    <div class="sh">
+      <div><div class="st">Lagerverwaltung</div><div class="ss">Artikel, Geräte, Kabel und Material.</div></div>
+      <div class="brow" id="lact"></div>
     </div>
-
-    <div class="alert-box" id="low-stock-alert">
-      <div class="alert-title">⚠ Nachbestellbedarf</div>
-      <div id="low-stock-list"></div>
-    </div>
-
     <div class="stats">
-      <div class="stat"><div class="stat-l">Artikel total</div><div class="stat-v" id="sl-total">—</div></div>
-      <div class="stat"><div class="stat-l">Tiefer Bestand</div><div class="stat-v" id="sl-low" style="color:var(--red);">—</div></div>
-      <div class="stat"><div class="stat-l">Lagerwert</div><div class="stat-v" id="sl-wert" style="font-size:16px;">—</div></div>
+      <div class="sc2"><div class="slbl">Artikel</div><div class="sval" id="s1">—</div></div>
+      <div class="sc2"><div class="slbl">Tiefer Bestand</div><div class="sval" id="s2" style="color:var(--red);">—</div></div>
+      <div class="sc2"><div class="slbl">Lagerwert</div><div class="sval" id="s3" style="font-size:16px;">—</div></div>
     </div>
-
-    <!-- Category view -->
-    <div id="lager-kat-view">
-      <div class="kat-grid" id="kat-grid"></div>
-    </div>
-
-    <!-- Article list view -->
-    <div id="lager-art-view" style="display:none;">
-      <div class="bc">
-        <span class="bc-link" onclick="showKatView()">&#8592; Alle Kategorien</span>
-        <span class="bc-sep">/</span>
-        <span id="bc-kat-name" style="color:var(--text2);"></span>
+    <div class="card">
+      <div style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap;align-items:center;">
+        <div class="sw2" style="flex:1;min-width:180px;margin:0;"><span class="sic">⌕</span><input type="text" id="lsrc" placeholder="Suchen..." oninput="rlager()"></div>
+        <select id="lkat" style="width:auto;flex-shrink:0;" onchange="rlager()"><option value="">Alle Kategorien</option></select>
       </div>
-      <div class="card">
-        <div class="sw"><span class="sic">&#9906;</span><input type="text" id="art-q" placeholder="Artikel suchen..." oninput="renderArtList()"></div>
-        <div class="lt-wrap">
-          <div class="lt-hdr"><span>Artikel</span><span class="hc-kat">Kategorie</span><span class="hc-mrk">Marke</span><span>Bestand</span><span>VK-Preis</span><span>Anpassen</span><span></span></div>
-          <div id="art-rows"></div>
-        </div>
+      <div class="lw">
+        <div class="lh"><span>Artikel</span><span class="hk">Kategorie</span><span class="hm">Marke</span><span>Bestand</span><span>Preis</span><span></span></div>
+        <div id="lrows"></div>
       </div>
     </div>
   </div>
 
   <!-- ARCHIV -->
-  <div class="page" id="page-archiv">
-    <div class="ph"><div><div class="pt">Rapport-Archiv</div><div class="ps">Rapporte einsehen, bearbeiten und exportieren.</div></div></div>
+  <div class="pg" id="page-archiv">
+    <div class="sh"><div><div class="st">Rapport-Archiv</div><div class="ss">Alle gespeicherten Rapporte.</div></div></div>
     <div class="card">
-      <div class="sw"><span class="sic">&#9906;</span><input type="text" id="arc-q" placeholder="Kunde, Projekt, Datum suchen..." oninput="filterArchiv()"></div>
-      <div id="arc-list"><div style="color:var(--text3);font-size:13px;">Wird geladen...</div></div>
+      <div class="sw2"><span class="sic">⌕</span><input type="text" id="asrc" placeholder="Suchen..." oninput="fArchiv()"></div>
+      <div id="alist"><div style="color:var(--text3);font-size:13px;">Wird geladen...</div></div>
     </div>
-  </div>
-
-  <!-- KATEGORIEN -->
-  <div class="page" id="page-kategorien">
-    <div class="ph">
-      <div><div class="pt">Kategorien</div><div class="ps">Lager-Kategorien mit Farbe, Icon und Bild verwalten.</div></div>
-      <button class="btn btn-p sm" onclick="openKatModal()">+ Kategorie</button>
-    </div>
-    <div class="card"><div id="kat-page-list"></div></div>
   </div>
 
   <!-- ADMIN -->
-  <div class="page" id="page-admin">
-    <div class="ph"><div><div class="pt">Administration</div><div class="ps">Benutzer und Kategorien verwalten.</div></div></div>
+  <div class="pg" id="page-admin">
+    <div class="sh"><div><div class="st">Administration</div><div class="ss">Benutzer und Kategorien verwalten.</div></div></div>
     <div class="card">
-      <div class="card-h"><span class="card-t" style="margin:0;">Benutzer</span><button class="btn btn-p sm" onclick="openUserModal()">+ Benutzer</button></div>
-      <div id="user-list"></div>
+      <div class="ch"><span class="ct" style="margin:0;">Benutzer</span><button class="btn bp sm" onclick="openUM()">+ Benutzer</button></div>
+      <div id="ulist"></div>
     </div>
-    <div class="card">
-      <div class="card-h"><span class="card-t" style="margin:0;">Kategorien</span><button class="btn btn-p sm" onclick="openKatModal()">+ Kategorie</button></div>
-      <div id="kat-admin-list"></div>
+    <div class="card" style="margin-top:16px;">
+      <div class="ch"><span class="ct" style="margin:0;">Kategorien</span><button class="btn bp sm" onclick="openKM()">+ Kategorie</button></div>
+      <div id="klist"></div>
     </div>
   </div>
 </div>
 
 <!-- MODAL: Lager wählen -->
-<div class="modal-bg" id="mod-lager">
-  <div class="modal" style="max-width:600px;">
-    <div class="modal-title">Artikel aus Lager wählen</div>
-    <div class="sw"><span class="sic">&#9906;</span><input type="text" id="ml-q" placeholder="Suchen..." oninput="renderML()"></div>
-    <div id="ml-list" style="max-height:58vh;overflow-y:auto;"></div>
-    <div style="margin-top:16px;text-align:right;"><button class="btn btn-g" onclick="closeModal('mod-lager')">Schliessen</button></div>
+<div class="mb" id="ml">
+  <div class="modal">
+    <div class="mt">Artikel aus Lager</div>
+    <div class="sw2"><span class="sic">⌕</span><input type="text" id="mls" placeholder="Suchen..." oninput="rML()"></div>
+    <div id="mll" style="max-height:55vh;overflow-y:auto;"></div>
+    <div style="margin-top:16px;text-align:right;"><button class="btn bg2b" onclick="cM('ml')">Schliessen</button></div>
   </div>
 </div>
 
 <!-- MODAL: Artikel -->
-<div class="modal-bg" id="mod-art">
+<div class="mb" id="ma">
   <div class="modal">
-    <div class="modal-title" id="mod-art-t">Neuer Artikel</div>
+    <div class="mt" id="mat">Neuer Artikel</div>
     <div class="fg" style="margin-bottom:16px;">
-      <div class="fi s2"><label>Beschreibung *</label><input type="text" id="a-desc" placeholder="z.B. HDMI Kabel 2.0m 4K"></div>
-      <div class="fi"><label>Typ</label><input type="text" id="a-typ" placeholder="Kabel / Gerät"></div>
-      <div class="fi"><label>Marke / Hersteller</label><input type="text" id="a-mrk"></div>
-      <div class="fi"><label>Artikelnummer</label><input type="text" id="a-nr" placeholder="ART-001"></div>
-      <div class="fi"><label>Kategorie</label><select id="a-kat"><option value="">Keine</option></select></div>
-      <div class="fi"><label>Einheit</label><select id="a-eh"><option>Stk</option><option>m</option><option>Set</option><option>Pkg</option><option>Paar</option></select></div>
-      <div class="fi"><label>Verkaufspreis (CHF) *</label><input type="number" id="a-vk" step="0.01" min="0"></div>
-      <div class="fi"><label>Einkaufspreis (CHF)</label><input type="number" id="a-ek" step="0.01" min="0"></div>
-      <div class="fi"><label>Bestand *</label><input type="number" id="a-bs" min="0"></div>
-      <div class="fi"><label>Mindestbestand</label><input type="number" id="a-mb" min="0" placeholder="2"></div>
-      <div class="fi s2">
-        <label>Artikelbild (optional)</label>
-        <input type="file" id="a-img" accept="image/*" onchange="previewArtImg(this)" style="padding:8px;">
-        <div id="a-img-preview" style="margin-top:8px;display:none;"><img id="a-img-thumb" style="width:80px;height:80px;object-fit:cover;border-radius:8px;border:1px solid var(--border2);"><button class="btn btn-d sm" style="margin-left:8px;" onclick="clearArtImg()">Bild entfernen</button></div>
-      </div>
+      <div class="fi s2"><label>Beschreibung *</label><input type="text" id="a-d" placeholder="z.B. HDMI Kabel 2m"></div>
+      <div class="fi"><label>Typ</label><input type="text" id="a-t" placeholder="Kabel"></div>
+      <div class="fi"><label>Marke</label><input type="text" id="a-m" placeholder="Belkin"></div>
+      <div class="fi"><label>Artikelnummer</label><input type="text" id="a-n"></div>
+      <div class="fi"><label>Kategorie</label><select id="a-k"><option value="">Keine</option></select></div>
+      <div class="fi"><label>Verkaufspreis (CHF) *</label><input type="number" id="a-v" step="0.01" placeholder="0.00"></div>
+      <div class="fi"><label>Einkaufspreis (CHF)</label><input type="number" id="a-e" step="0.01" placeholder="0.00"></div>
+      <div class="fi"><label>Bestand *</label><input type="number" id="a-b" placeholder="0"></div>
+      <div class="fi"><label>Mindestbestand</label><input type="number" id="a-mb2" placeholder="0"></div>
+      <div class="fi"><label>Einheit</label><select id="a-u"><option>Stk</option><option>m</option><option>Set</option><option>Pkg</option></select></div>
     </div>
     <div class="brow">
-      <button class="btn btn-p" onclick="saveArtikel()">Speichern</button>
-      <button class="btn btn-g" onclick="closeModal('mod-art')">Abbrechen</button>
-      <button class="btn btn-d" id="btn-del-art" style="margin-left:auto;" onclick="deleteArtikel()">Löschen</button>
+      <button class="btn bp" onclick="saveA()">Speichern</button>
+      <button class="btn bg2b" onclick="cM('ma')">Abbrechen</button>
+      <button class="btn bd" id="bdla" style="margin-left:auto;" onclick="delA()">Löschen</button>
     </div>
   </div>
 </div>
 
 <!-- MODAL: Rapport Detail -->
-<div class="modal-bg" id="mod-rap">
-  <div class="modal" style="max-width:700px;">
-    <div class="modal-title" id="mod-rap-t">Rapport</div>
-    <div id="mod-rap-content"></div>
-    <div class="brow" style="margin-top:16px;flex-wrap:wrap;">
-      <button class="btn btn-g" onclick="closeModal('mod-rap')">Schliessen</button>
-      <button class="btn btn-p" onclick="pdfFromData()">PDF exportieren</button>
-      <button class="btn btn-warn" id="btn-edit-rap" onclick="loadRapportIntoForm(false)">Bearbeiten</button>
-      <button class="btn btn-g" id="btn-dup-rap" onclick="duplicateRapport()">Duplizieren</button>
-      <button class="btn btn-d" id="btn-reopen-rap" onclick="reopenRapport()" style="margin-left:auto;">Wieder öffnen</button>
+<div class="mb" id="mr">
+  <div class="modal" style="max-width:680px;">
+    <div class="mt">Rapport-Details</div>
+    <div id="mrc"></div>
+    <div class="brow" style="margin-top:16px;">
+      <button class="btn bg2b" onclick="cM('mr')">Schliessen</button>
+      <button class="btn bp" onclick="pdfFD()">PDF exportieren</button>
     </div>
   </div>
 </div>
 
 <!-- MODAL: Benutzer -->
-<div class="modal-bg" id="mod-user">
+<div class="mb" id="mu">
   <div class="modal">
-    <div class="modal-title" id="mod-user-t">Neuer Benutzer</div>
+    <div class="mt" id="mut">Neuer Benutzer</div>
     <div class="fg" style="margin-bottom:16px;">
-      <div class="fi"><label>Benutzername *</label><input type="text" id="u-un" autocapitalize="none" autocorrect="off" spellcheck="false"></div>
-      <div class="fi"><label>Anzeigename *</label><input type="text" id="u-nm"></div>
-      <div class="fi"><label>Passwort *</label><input type="password" id="u-pw" placeholder="Min. 6 Zeichen"></div>
-      <div class="fi"><label>Rolle</label>
-        <select id="u-ro">
-          <option value="techniker">Techniker — Rapport erstellen, Lager lesen</option>
-          <option value="lager">Lagerverwalter — + Lager &amp; Kategorien bearbeiten</option>
-          <option value="admin">Administrator — Vollzugriff</option>
-        </select>
-      </div>
+      <div class="fi"><label>Benutzername *</label><input type="text" id="u-n" autocapitalize="none"></div>
+      <div class="fi"><label>Name *</label><input type="text" id="u-nm"></div>
+      <div class="fi"><label>Passwort</label><input type="password" id="u-p" placeholder="Leer = unverändert"></div>
+      <div class="fi"><label>Rolle</label><select id="u-r"><option value="techniker">Techniker</option><option value="lager">Lagerverwalter</option><option value="admin">Administrator</option></select></div>
     </div>
     <div class="brow">
-      <button class="btn btn-p" onclick="saveUser()">Speichern</button>
-      <button class="btn btn-g" onclick="closeModal('mod-user')">Abbrechen</button>
-      <button class="btn btn-d" id="btn-del-usr" style="margin-left:auto;" onclick="deleteUser()">Löschen</button>
+      <button class="btn bp" onclick="saveU()">Speichern</button>
+      <button class="btn bg2b" onclick="cM('mu')">Abbrechen</button>
+      <button class="btn bd" id="bdlu" style="margin-left:auto;" onclick="delU()">Löschen</button>
     </div>
   </div>
 </div>
 
 <!-- MODAL: Kategorie -->
-<div class="modal-bg" id="mod-kat">
-  <div class="modal" style="max-width:420px;">
-    <div class="modal-title" id="mod-kat-t">Neue Kategorie</div>
+<div class="mb" id="mk">
+  <div class="modal">
+    <div class="mt" id="mkt">Neue Kategorie</div>
     <div class="fg" style="margin-bottom:16px;">
-      <div class="fi s2"><label>Name *</label><input type="text" id="k-nm" placeholder="z.B. Kabel & Leitungen"></div>
-      <div class="fi"><label>Farbe</label><input type="color" id="k-fc" value="#5b8def" style="height:46px;padding:4px 6px;"></div>
-      <div class="fi"><label>Icon (Emoji)</label><input type="text" id="k-ic" placeholder="z.B. 🔌" maxlength="4"></div>
-      <div class="fi s2">
-        <label>Kategoriebild (optional)</label>
-        <input type="file" id="k-img" accept="image/*" onchange="previewKatImg(this)" style="padding:8px;">
-        <div id="k-img-preview" style="margin-top:8px;display:none;"><img id="k-img-thumb" style="width:80px;height:80px;object-fit:cover;border-radius:8px;border:1px solid var(--border2);"><button class="btn btn-d sm" style="margin-left:8px;" onclick="clearKatImg()">Bild entfernen</button></div>
-      </div>
+      <div class="fi s2"><label>Name *</label><input type="text" id="k-n" placeholder="z.B. Kabel &amp; Leitungen"></div>
+      <div class="fi"><label>Farbe</label><input type="color" id="k-f" value="#5b8def" style="height:44px;padding:4px;box-shadow:none;"></div>
     </div>
     <div class="brow">
-      <button class="btn btn-p" onclick="saveKat()">Speichern</button>
-      <button class="btn btn-g" onclick="closeModal('mod-kat')">Abbrechen</button>
-      <button class="btn btn-d" id="btn-del-kat" style="margin-left:auto;" onclick="deleteKat()">Löschen</button>
-    </div>
-  </div>
-</div>
-
-<!-- MODAL: Passwort ändern -->
-<div class="modal-bg" id="mod-pw">
-  <div class="modal" style="max-width:380px;">
-    <div class="modal-title">Passwort ändern</div>
-    <div class="fi" style="margin-bottom:12px;"><label>Aktuelles Passwort</label><input type="password" id="pw-old"></div>
-    <div class="fi" style="margin-bottom:12px;"><label>Neues Passwort</label><input type="password" id="pw-new" placeholder="Min. 6 Zeichen"></div>
-    <div class="fi" style="margin-bottom:20px;"><label>Neues Passwort bestätigen</label><input type="password" id="pw-new2"></div>
-    <div class="brow">
-      <button class="btn btn-p" onclick="changePW()">Speichern</button>
-      <button class="btn btn-g" onclick="closeModal('mod-pw')">Abbrechen</button>
+      <button class="btn bp" onclick="saveK()">Speichern</button>
+      <button class="btn bg2b" onclick="cM('mk')">Abbrechen</button>
+      <button class="btn bd" id="bdlk" style="margin-left:auto;" onclick="delK()">Löschen</button>
     </div>
   </div>
 </div>
@@ -544,13 +447,14 @@ hr{border:none;border-top:1px solid var(--border);margin:16px 0;}
 <div class="toast" id="toast"></div>
 
 <script>
-const SUPA_URL='https://tmdvzkkcoahdynkgxuzz.supabase.co';
-const SUPA_KEY='sb_publishable_4S5nnYvaj7WN_ph-yWG9yQ_s3I6aukk';
-const db=supabase.createClient(SUPA_URL,SUPA_KEY);
+const SU='https://tmdvzkkcoahdynkgxuzz.supabase.co';
+const SK='sb_publishable_4S5nnYvaj7WN_ph-yWG9yQ_s3I6aukk';
+const db=supabase.createClient(SU,SK);
 
+// STATE
 let CU=null,MA=[],LA=[],KA=[],AR=[],AT='Auftrag Abgeschlossen';
-let eArt=null,eUsr=null,eKat=null,rapDetail=null,editRapId=null,currentKatId=null;
-
+let eA=null,eU=null,eK=null,RD=null;
+// FZ/HM state (id -> bool)
 const FZ=[
   {id:'fz1',label:'Rayon 1 — bis 20km retour',preis:65},
   {id:'fz2',label:'Rayon 2 — bis 40km retour',preis:95},
@@ -558,682 +462,504 @@ const FZ=[
   {id:'fz4',label:'Rayon 4 — bis 90km retour',preis:180},
   {id:'fz5',label:'Rayon 5 — bis 180km retour',preis:270},
 ];
-const HM=[{id:'hm1',preis:24.5},{id:'hm2',preis:24.5},{id:'hm3',preis:35},{id:'hm4',preis:35}];
-const HM_LABELS=['Klein- und Hilfsmaterial','Bohrmaterial / Montagematerial','Servicenotebook mit Lizenzen','Messgerät mit Messlizenz'];
+const HM=[
+  {id:'hm1',label:'Klein- und Hilfsmaterial',preis:24.5},
+  {id:'hm2',label:'Bohrmaterial / Montagematerial',preis:24.5},
+  {id:'hm3',label:'Servicenotebook mit Lizenzen',preis:35},
+  {id:'hm4',label:'Messgerät mit Messlizenz',preis:35},
+];
+const fzSel={},hmSel={};
 
-// ── AUTH ──
-async function doLogin(){
+// AUTH
+async function login(){
   const u=document.getElementById('lu').value.trim().toLowerCase();
   const p=document.getElementById('lp').value;
-  if(!u||!p){showLE('Bitte alle Felder ausfüllen.');return;}
+  if(!u||!p){showE('Bitte alle Felder ausfüllen.');return;}
   const{data,error}=await db.from('benutzer').select('*').eq('benutzername',u).eq('aktiv',true).single();
-  if(error||!data){showLE('Benutzername nicht gefunden.');return;}
+  if(error||!data){showE('Falscher Benutzername oder Passwort.');return;}
   let ok=false;try{ok=atob(data.passwort_hash)===p;}catch(e){}
-  if(!ok){showLE('Falsches Passwort.');return;}
+  if(!ok){showE('Falscher Benutzername oder Passwort.');return;}
   CU=data;
-  document.getElementById('login-screen').style.display='none';
+  document.getElementById('ls').style.display='none';
   document.getElementById('app').classList.add('on');
-  document.getElementById('nav-name').textContent=data.name;
-  document.getElementById('nav-rolle').textContent={admin:'Admin',lager:'Lager',techniker:'Techniker'}[data.rolle]||data.rolle;
-  if(data.rolle==='admin')document.getElementById('tab-admin').classList.remove('hidden');
-  if(data.rolle==='admin'||data.rolle==='lager')document.getElementById('tab-kategorien').classList.remove('hidden');
+  document.getElementById('nnm').textContent=data.name;
+  document.getElementById('nro').textContent={admin:'Admin',lager:'Lager',techniker:'Techniker'}[data.rolle]||data.rolle;
+  if(data.rolle==='admin')document.getElementById('t-adm').classList.remove('hidden');
   await init();
 }
-function showLE(m){const e=document.getElementById('lerr');e.textContent=m;e.style.display='block';}
-function doLogout(){CU=null;document.getElementById('app').classList.remove('on');document.getElementById('login-screen').style.display='flex';document.getElementById('lp').value='';document.getElementById('lerr').style.display='none';}
-function canEdit(){return CU&&(CU.rolle==='admin'||CU.rolle==='lager');}
-function isAdmin(){return CU&&CU.rolle==='admin';}
-
-// Passwort ändern
-function openPWModal(){document.getElementById('pw-old').value='';document.getElementById('pw-new').value='';document.getElementById('pw-new2').value='';openModal('mod-pw');}
-async function changePW(){
-  const old=document.getElementById('pw-old').value;
-  const nw=document.getElementById('pw-new').value;
-  const nw2=document.getElementById('pw-new2').value;
-  let ok=false;try{ok=atob(CU.passwort_hash)===old;}catch(e){}
-  if(!ok){toast('Aktuelles Passwort falsch','er');return;}
-  if(nw.length<6){toast('Neues Passwort min. 6 Zeichen','er');return;}
-  if(nw!==nw2){toast('Passwörter stimmen nicht überein','er');return;}
-  await db.from('benutzer').update({passwort_hash:btoa(nw)}).eq('id',CU.id);
-  CU.passwort_hash=btoa(nw);
-  toast('Passwort geändert','ok');closeModal('mod-pw');
+function showE(m){const e=document.getElementById('le');e.textContent=m;e.style.display='block';}
+function logout(){
+  CU=null;
+  document.getElementById('app').classList.remove('on');
+  document.getElementById('ls').style.display='flex';
+  document.getElementById('lp').value='';
+  document.getElementById('le').style.display='none';
 }
+function canE(){return CU&&(CU.rolle==='admin'||CU.rolle==='lager');}
+function isAdm(){return CU&&CU.rolle==='admin';}
 
-// ── INIT ──
+// INIT
 async function init(){
   document.getElementById('r-dat').value=new Date().toISOString().split('T')[0];
-  buildFzList();
   await Promise.all([loadMA(),loadLA(),loadKA()]);
-  setupSigs();updTot();
+  setupSigs();
+  buildFZ();buildHM();
+  updT();
 }
-// Track selected FZ/HM state
-const fzSelected={};
-const hmSelected={};
 
-function buildFzList(){
-  document.getElementById('fz-list').innerHTML=FZ.map(f=>`
-    <div class="fz-row" id="row-${f.id}" onclick="toggleFzRow('${f.id}',${f.preis})">
-      <div class="fz-ind" id="ind-${f.id}">&#10003;</div>
-      <span class="fz-lbl">${f.label}</span>
-      <input type="number" class="fz-h" id="${f.id}-h" placeholder="0.0h" step="0.5" min="0"
-        oninput="event.stopPropagation();updTot()" onclick="event.stopPropagation()"
-        title="Zusätzliche Stunden (werden mit CHF 65/h berechnet)" style="width:70px;">
-      <span class="fz-preis">CHF ${f.preis.toFixed(2)}</span>
+// NAV
+function showTab(p,b){
+  document.querySelectorAll('.pg').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.tbtn').forEach(x=>x.classList.remove('active'));
+  document.getElementById('page-'+p).classList.add('active');
+  document.getElementById(b).classList.add('active');
+  if(p==='lager'){rlager();rStats();}
+  if(p==='archiv')loadArc();
+  if(p==='admin'){loadU();loadKL();}
+}
+
+// TOAST / MODAL
+function toast(m,t=''){const e=document.getElementById('toast');e.textContent=m;e.className='toast show '+t;setTimeout(()=>e.className='toast',3000);}
+function oM(id){document.getElementById(id).classList.add('open');}
+function cM(id){document.getElementById(id).classList.remove('open');}
+function setAt(el,v){document.querySelectorAll('.rb').forEach(b=>b.classList.remove('on'));el.classList.add('on');AT=v;}
+
+// FZ/HM TOGGLE ROWS
+function buildFZ(){
+  document.getElementById('fzlist').innerHTML=FZ.map(f=>`
+    <div class="fzr" id="fzr-${f.id}" onclick="togFZ('${f.id}')">
+      <div class="fzind" id="fzi-${f.id}">✓</div>
+      <span class="fzl">${f.label}</span>
+      <span class="fzp">CHF ${f.preis.toFixed(2)}</span>
     </div>`).join('');
 }
-
-function toggleFzRow(id,preis){
-  const row=document.getElementById('row-'+id);
-  const isHm=id.startsWith('hm');
-  if(isHm){
-    hmSelected[id]=!hmSelected[id];
-  } else {
-    fzSelected[id]=!fzSelected[id];
-  }
-  const sel=isHm?hmSelected[id]:fzSelected[id];
-  row.classList.toggle('selected',sel);
-  updTot();
+function buildHM(){
+  document.getElementById('hmlist').innerHTML=HM.map(h=>`
+    <div class="fzr" id="fzr-${h.id}" onclick="togFZ('${h.id}')">
+      <div class="fzind" id="fzi-${h.id}">✓</div>
+      <span class="fzl">${h.label}</span>
+      <span class="fzp">CHF ${h.preis.toFixed(2)}</span>
+    </div>`).join('');
+}
+function togFZ(id){
+  const isHM=id.startsWith('hm');
+  const obj=isHM?hmSel:fzSel;
+  obj[id]=!obj[id];
+  document.getElementById('fzr-'+id).classList.toggle('sel',!!obj[id]);
+  updT();
+}
+function getFZTotal(){
+  let t=0;
+  FZ.forEach(f=>{if(fzSel[f.id])t+=f.preis;});
+  HM.forEach(h=>{if(hmSel[h.id])t+=h.preis;});
+  return t;
+}
+function getFZItems(){
+  const items=[];
+  FZ.forEach(f=>{if(fzSel[f.id])items.push([f.label,'CHF '+f.preis.toFixed(2),'—','CHF '+f.preis.toFixed(2)]);});
+  HM.forEach(h=>{if(hmSel[h.id])items.push([h.label,'CHF '+h.preis.toFixed(2),'—','CHF '+h.preis.toFixed(2)]);});
+  return items;
+}
+function resetFZ(){
+  [...FZ,...HM].forEach(x=>{
+    const obj=x.id.startsWith('hm')?hmSel:fzSel;
+    obj[x.id]=false;
+    const row=document.getElementById('fzr-'+x.id);
+    if(row)row.classList.remove('sel');
+  });
 }
 
-function isFzSelected(id){return !!(fzSelected[id]||hmSelected[id]);}
-
-// ── NAV ──
-function showTab(t){
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
-  document.getElementById('page-'+t).classList.add('active');
-  document.getElementById('tab-'+t).classList.add('active');
-  if(t==='lager'){showKatView();renderLagerStats();}
-  if(t==='archiv')loadArchiv();
-  if(t==='admin'&&isAdmin()){loadUsers();loadKatAdminList();}
-  if(t==='kategorien')loadKatPageList();
-}
-
-// ── TOAST / MODAL ──
-function toast(m,t=''){const e=document.getElementById('toast');e.textContent=m;e.className='toast show '+t;setTimeout(()=>e.className='toast',3200);}
-function openModal(id){document.getElementById(id).classList.add('open');}
-function closeModal(id){document.getElementById(id).classList.remove('open');}
-function setAT(el,v){document.querySelectorAll('.rb').forEach(b=>b.classList.remove('on'));el.classList.add('on');AT=v;}
-
-// ── KATEGORIEN ──
+// KATEGORIEN
 async function loadKA(){
   const{data}=await db.from('kategorien').select('*').order('name');
   KA=data||[];
-  const sa=document.getElementById('a-kat');
-  if(sa)sa.innerHTML='<option value="">Keine</option>'+KA.map(k=>`<option value="${k.id}">${k.name}</option>`).join('');
+  const sa=document.getElementById('a-k'),sl=document.getElementById('lkat');
+  sa.innerHTML='<option value="">Keine</option>'+KA.map(k=>`<option value="${k.id}">${k.name}</option>`).join('');
+  sl.innerHTML='<option value="">Alle Kategorien</option>'+KA.map(k=>`<option value="${k.id}">${k.name}</option>`).join('');
 }
-function kName(id){return KA.find(x=>x.id===id)?.name||'—';}
-function kColor(id){return KA.find(x=>x.id===id)?.farbe||'#888';}
-function kIcon(id){return KA.find(x=>x.id===id)?.icon||'';}
+function kN(id){return KA.find(x=>x.id===id)?.name||'';}
+function kC(id){return KA.find(x=>x.id===id)?.farbe||'#555';}
 
-// ── LAGER KATEGORIE-VIEW ──
-async function loadLA(){
-  const{data}=await db.from('lager').select('*').order('beschreibung');
-  LA=data||[];
-  renderKatGrid();renderLagerStats();renderLowStockAlert();
-}
-function showKatView(){
-  document.getElementById('lager-kat-view').style.display='block';
-  document.getElementById('lager-art-view').style.display='none';
-  document.getElementById('lager-sub').textContent='Artikel nach Kategorie durchsuchen';
-  currentKatId=null;
-  renderKatGrid();
-  const ab=document.getElementById('lager-act-bar');
-  if(ab)ab.innerHTML=canEdit()?`<button class="btn btn-p sm" onclick="openArtModal()">+ Artikel</button>`:'';
-}
-function showArtView(katId,katName){
-  currentKatId=katId;
-  document.getElementById('lager-kat-view').style.display='none';
-  document.getElementById('lager-art-view').style.display='block';
-  document.getElementById('bc-kat-name').textContent=katName;
-  document.getElementById('lager-sub').textContent=katName;
-  document.getElementById('art-q').value='';
-  renderArtList();
-  const ab=document.getElementById('lager-act-bar');
-  if(ab)ab.innerHTML=canEdit()?`<button class="btn btn-p sm" onclick="openArtModal()">+ Artikel</button>`:'';
-}
-function renderKatGrid(){
-  const el=document.getElementById('kat-grid');if(!el)return;
-  // "Alle" card
-  const totalLow=LA.filter(a=>a.bestand<=(a.mindestbestand||2)).length;
-  let html=`<div class="kat-card kat-card-alle" onclick="showArtView(null,'Alle Artikel')">
-    ${totalLow>0?'<div class="kat-warn"></div>':''}
-    <div class="kat-icon" style="background:rgba(200,184,154,.15);">📦</div>
-    <div class="kat-name">Alle Artikel</div>
-    <div class="kat-count">${LA.length} Artikel</div>
-  </div>`;
-  KA.forEach(k=>{
-    const items=LA.filter(a=>a.kategorie_id===k.id);
-    const lowCount=items.filter(a=>a.bestand<=(a.mindestbestand||2)).length;
-    const icon=k.icon||'📁';
-    const katCardImg=k.bild?`<img src="${k.bild}" style="width:48px;height:48px;object-fit:cover;border-radius:10px;">`:`<span style="font-size:26px;">${icon}</span>`;
-    html+=`<div class="kat-card" onclick="showArtView('${k.id}','${k.name}')">
-      ${lowCount>0?'<div class="kat-warn"></div>':''}
-      <div class="kat-icon" style="background:${k.bild?'transparent':k.farbe+'22'};">${katCardImg}</div>
-      <div class="kat-name">${k.name}</div>
-      <div class="kat-count">${items.length} Artikel${lowCount>0?` · <span style="color:var(--red);">${lowCount} tief</span>`:''}</div>
-    </div>`;
-  });
-  // Uncategorized
-  const uncat=LA.filter(a=>!a.kategorie_id);
-  if(uncat.length>0){
-    const lowU=uncat.filter(a=>a.bestand<=(a.mindestbestand||2)).length;
-    html+=`<div class="kat-card" onclick="showArtView('__none__','Ohne Kategorie')">
-      ${lowU>0?'<div class="kat-warn"></div>':''}
-      <div class="kat-icon" style="background:rgba(136,135,128,.15);">❓</div>
-      <div class="kat-name">Ohne Kategorie</div>
-      <div class="kat-count">${uncat.length} Artikel</div>
-    </div>`;
-  }
-  el.innerHTML=html;
-}
-function renderArtList(){
-  const q=(document.getElementById('art-q')?.value||'').toLowerCase();
-  let f=LA;
-  if(currentKatId===null){}
-  else if(currentKatId==='__none__')f=LA.filter(a=>!a.kategorie_id);
-  else f=LA.filter(a=>a.kategorie_id===currentKatId);
-  if(q)f=f.filter(a=>a.beschreibung.toLowerCase().includes(q)||(a.marke||'').toLowerCase().includes(q)||(a.artikelnummer||'').toLowerCase().includes(q));
-  const el=document.getElementById('art-rows');if(!el)return;
-  if(!f.length){el.innerHTML='<div style="padding:18px 14px;color:var(--text3);font-size:13px;">Keine Artikel gefunden.</div>';return;}
-  el.innerHTML=f.map(a=>{
-    const low=a.bestand<=(a.mindestbestand||2);
-    const kc=a.kategorie_id?kColor(a.kategorie_id):'',kn=a.kategorie_id?kName(a.kategorie_id):'';
-    const eb=canEdit()?`<button class="btn btn-g sm" onclick="openArtModal('${a.id}')">✎</button>`:'';
-    const artImg=a.bild?`<img src="${a.bild}" style="width:36px;height:36px;object-fit:cover;border-radius:6px;margin-right:8px;flex-shrink:0;">`:`<span style="width:36px;height:36px;border-radius:6px;background:${kc||'var(--bg3)'};display:inline-flex;align-items:center;justify-content:center;font-size:16px;margin-right:8px;flex-shrink:0;">📦</span>`;
-    return`<div class="lt-row">
-      <div style="display:flex;align-items:center;">${artImg}<div><div class="lt-name">${a.beschreibung}</div><div class="lt-artnr">${a.artikelnummer?'#'+a.artikelnummer:''}</div></div></div>
-      <div class="lt-kat">${kn?`<span class="kpill" style="background:${kc}22;color:${kc};">${kn}</span>`:''}</div>
-      <div class="lt-mrk" style="font-size:13px;color:var(--text2);">${a.marke||''}</div>
-      <div class="lt-qty ${low?'low':'ok'}">${a.bestand} ${a.einheit||'Stk'}${low?' ⚠':''}</div>
-      <div class="lt-prc">CHF ${Number(a.verkaufspreis).toFixed(2)}</div>
-      <div class="qty-ctrl">${canEdit()?`<button class="qty-btn" onclick="adjQty('${a.id}',-1)">−</button><button class="qty-btn" onclick="adjQty('${a.id}',1)">+</button>`:''}</div>
-      <div style="display:flex;justify-content:flex-end;">${eb}</div>
-    </div>`;
-  }).join('');
-}
-async function adjQty(id,delta){
-  if(!canEdit())return;
-  const a=LA.find(x=>x.id===id);if(!a)return;
-  const nb=Math.max(0,a.bestand+delta);
-  await db.from('lager').update({bestand:nb}).eq('id',id);
-  a.bestand=nb;
-  renderArtList();renderLagerStats();renderLowStockAlert();renderKatGrid();
-  toast((delta>0?'+1':'-1')+' '+a.beschreibung+(nb<=(a.mindestbestand||2)?' ⚠ Tiefer Bestand!':''),'ok');
-}
-function renderLagerStats(){
-  const t=LA.length,l=LA.filter(a=>a.bestand<=(a.mindestbestand||2)).length,w=LA.reduce((s,a)=>s+a.bestand*Number(a.verkaufspreis),0);
-  const e1=document.getElementById('sl-total'),e2=document.getElementById('sl-low'),e3=document.getElementById('sl-wert');
-  if(e1)e1.textContent=t;if(e2)e2.textContent=l;if(e3)e3.textContent='CHF '+w.toFixed(0);
-}
-function renderLowStockAlert(){
-  const low=LA.filter(a=>a.bestand<=(a.mindestbestand||2));
-  const box=document.getElementById('low-stock-alert');
-  const list=document.getElementById('low-stock-list');
-  if(!low.length){box.classList.remove('show');return;}
-  box.classList.add('show');
-  list.innerHTML=low.map(a=>`<div class="alert-item">• ${a.beschreibung} — Bestand: <strong>${a.bestand}</strong> (Minimum: ${a.mindestbestand||2})</div>`).join('');
-}
-function renderLager(){renderKatGrid();}// compat
-
-// ── ARTIKEL MODAL ──
-function openArtModal(id){
-  if(!canEdit()){toast('Keine Berechtigung','er');return;}
-  eArt=id||null;const a=id?LA.find(x=>x.id===id):null;
-  document.getElementById('mod-art-t').textContent=a?'Artikel bearbeiten':'Neuer Artikel';
-  document.getElementById('a-desc').value=a?.beschreibung||'';
-  document.getElementById('a-typ').value=a?.typ||'';
-  document.getElementById('a-mrk').value=a?.marke||'';
-  document.getElementById('a-nr').value=a?.artikelnummer||'';
-  document.getElementById('a-kat').value=a?.kategorie_id||'';
-  document.getElementById('a-eh').value=a?.einheit||'Stk';
-  document.getElementById('a-vk').value=a?.verkaufspreis||'';
-  document.getElementById('a-ek').value=a?.einkaufspreis||'';
-  document.getElementById('a-bs').value=a?.bestand??0;
-  document.getElementById('a-mb').value=a?.mindestbestand??0;
-  document.getElementById('btn-del-art').style.display=a?'inline-flex':'none';
-  artImgBase64=a?.bild||'';
-  const aprev=document.getElementById('a-img-preview');
-  const athumb=document.getElementById('a-img-thumb');
-  if(a?.bild){athumb.src=a.bild;aprev.style.display='flex';aprev.style.alignItems='center';}
-  else{aprev.style.display='none';}
-  document.getElementById('a-img').value='';
-  openModal('mod-art');
-}
-async function saveArtikel(){
-  if(!canEdit())return;
-  const desc=document.getElementById('a-desc').value.trim();
-  const vk=parseFloat(document.getElementById('a-vk').value);
-  if(!desc||isNaN(vk)){toast('Beschreibung und Preis erforderlich','er');return;}
-  const bArt=artImgBase64||null;
-  const pay={beschreibung:desc,typ:document.getElementById('a-typ').value,marke:document.getElementById('a-mrk').value,artikelnummer:document.getElementById('a-nr').value,kategorie_id:document.getElementById('a-kat').value||null,einheit:document.getElementById('a-eh').value,verkaufspreis:vk,bestand:parseInt(document.getElementById('a-bs').value)||0,mindestbestand:parseInt(document.getElementById('a-mb').value)||0,einkaufspreis:parseFloat(document.getElementById('a-ek').value)||null};
-  if(bArt!==null)pay.bild=bArt;
-  if(eArt){await db.from('lager').update(pay).eq('id',eArt);toast('Artikel aktualisiert','ok');}
-  else{await db.from('lager').insert(pay);toast('Artikel gespeichert','ok');}
-  closeModal('mod-art');await loadLA();
-  if(currentKatId!==null)renderArtList();
-}
-async function deleteArtikel(){
-  if(!eArt||!confirm('Artikel löschen?'))return;
-  await db.from('lager').delete().eq('id',eArt);
-  toast('Artikel gelöscht');closeModal('mod-art');await loadLA();
-}
-
-// ── MITARBEITER ──
+// MITARBEITER
 async function loadMA(){
   const{data}=await db.from('mitarbeiter').select('*').eq('aktiv',true).order('name');
   MA=data||[];
-  document.getElementById('aw-list').innerHTML=MA.map(m=>`
-    <div class="aw-row">
-      <div class="aw-info"><div class="aw-name">${m.name}</div><div class="aw-rolle">${m.rolle}</div></div>
-      <div class="aw-rate">CHF ${Number(m.stundenansatz).toFixed(2)}/h</div>
-      <input type="number" placeholder="0.0h" step="0.5" min="0" id="aw-${m.id}" oninput="updTot()" style="width:80px;flex-shrink:0;">
+  document.getElementById('awl').innerHTML=MA.map(m=>`
+    <div class="aw">
+      <div class="awi"><div class="awn">${m.name}</div><div class="awr">${m.rolle}</div></div>
+      <div class="awa">CHF ${Number(m.stundenansatz).toFixed(2)}/h</div>
+      <input style="width:80px;flex-shrink:0;" type="number" placeholder="0.0" step="0.5" min="0" id="aw-${m.id}" oninput="updT()">
     </div>`).join('');
 }
 
-// ── MATERIAL TABLE ──
-function addMatRow(a){
-  const tb=document.getElementById('mat-tbody'),id='r'+Date.now();
-  const tr=document.createElement('tr');tr.id='mr-'+id;tr.dataset.lid=a?.lid||'';
-  tr.innerHTML=`<td><input type="number" value="${a?.anz||1}" min="1" style="width:50px;" oninput="calcMR(this)"></td><td><input type="text" value="${a?.typ||''}" placeholder="Typ" style="width:100%;min-width:60px;"></td><td><input type="text" value="${a?.mrk||''}" placeholder="Marke" style="width:100%;min-width:60px;"></td><td><input type="text" value="${a?.dsc||''}" placeholder="Beschreibung" style="width:100%;min-width:100px;"></td><td><input type="number" value="${a?.prc||''}" step="0.01" placeholder="0.00" style="width:80px;" oninput="calcMR(this)"></td><td class="mc" style="font-family:'DM Mono',monospace;white-space:nowrap;font-size:13px;">—</td><td><button class="btn btn-d sm" style="padding:5px 8px;" onclick="document.getElementById('mr-${id}').remove();updTot()">✕</button></td>`;
-  tb.appendChild(tr);
-  if(a?.prc)calcMR(tr.querySelector('td:nth-child(5) input'));
-  updTot();
+// LAGER
+async function loadLA(){
+  const{data}=await db.from('lager').select('*').order('beschreibung');
+  LA=data||[];rlager();rStats();
 }
-function calcMR(el){
-  const tr=el.closest('tr'),anz=parseFloat(tr.querySelector('td:first-child input')?.value)||0,prc=parseFloat(tr.querySelector('td:nth-child(5) input')?.value)||0;
-  const c=tr.querySelector('.mc');if(c)c.textContent=(anz&&prc)?'CHF '+(anz*prc).toFixed(2):'—';
-  updTot();
-}
-function openLagerModal(){renderML();openModal('mod-lager');}
-function renderML(){
-  const q=(document.getElementById('ml-q')?.value||'').toLowerCase();
-  const f=LA.filter(a=>a.beschreibung.toLowerCase().includes(q)||(a.marke||'').toLowerCase().includes(q)||(a.artikelnummer||'').toLowerCase().includes(q));
-  document.getElementById('ml-list').innerHTML=f.map(a=>{
+function rlager(){
+  const q=(document.getElementById('lsrc')?.value||'').toLowerCase();
+  const kf=document.getElementById('lkat')?.value||'';
+  const f=LA.filter(a=>(!q||a.beschreibung.toLowerCase().includes(q)||(a.marke||'').toLowerCase().includes(q)||(a.typ||'').toLowerCase().includes(q))&&(!kf||a.kategorie_id===kf));
+  const el=document.getElementById('lrows');if(!el)return;
+  const la=document.getElementById('lact');
+  if(la)la.innerHTML=canE()?`<button class="btn bp sm" onclick="openAM()">+ Artikel</button>`:'';
+  if(!f.length){el.innerHTML='<div style="padding:20px 16px;color:var(--text3);font-size:13px;">Keine Artikel gefunden.</div>';return;}
+  el.innerHTML=f.map(a=>{
     const low=a.bestand<=(a.mindestbestand||2);
-    return`<div class="r-item" style="cursor:pointer;" onclick="addFL('${a.id}')">
-      <div class="r-il"><div class="r-ik">${a.beschreibung}</div><div class="r-im">${[a.typ,a.marke].filter(Boolean).join(' · ')} · Bestand: <span style="color:${low?'var(--red)':'var(--green)'};">${a.bestand} ${a.einheit||'Stk'}</span></div></div>
-      <div style="font-family:'DM Mono',monospace;font-size:14px;color:var(--accent);flex-shrink:0;">CHF ${Number(a.verkaufspreis).toFixed(2)}</div>
-    </div>`;
+    const cc=a.kategorie_id?kC(a.kategorie_id):'#555',cn=a.kategorie_id?kN(a.kategorie_id):'';
+    const eb=canE()?`<button class="btn bg2b sm" onclick="openAM('${a.id}')">✎</button>`:'';
+    return`<div class="lr"><div><div class="ln">${a.beschreibung}</div><div class="lm">${a.artikelnummer?'#'+a.artikelnummer:''}</div></div><div class="lk">${cn?`<span class="kpill" style="background:${cc}22;color:${cc};">${cn}</span>`:''}</div><div class="lmr">${a.marke||''}</div><div class="lq ${low?'low':'ok'}">${a.bestand} ${a.einheit||'Stk'}${low?' ⚠':''}</div><div class="lp2">CHF ${Number(a.verkaufspreis).toFixed(2)}</div><div class="la">${eb}</div></div>`;
+  }).join('');
+}
+function rStats(){
+  const t=LA.length,l=LA.filter(a=>a.bestand<=(a.mindestbestand||2)).length,w=LA.reduce((s,a)=>s+a.bestand*a.verkaufspreis,0);
+  const e1=document.getElementById('s1'),e2=document.getElementById('s2'),e3=document.getElementById('s3');
+  if(e1)e1.textContent=t;if(e2)e2.textContent=l;if(e3)e3.textContent='CHF '+w.toFixed(0);
+}
+
+// ARTIKEL MODAL
+function openAM(id){
+  if(!canE()){toast('Keine Berechtigung','er');return;}
+  eA=id||null;const a=id?LA.find(x=>x.id===id):null;
+  document.getElementById('mat').textContent=a?'Artikel bearbeiten':'Neuer Artikel';
+  document.getElementById('a-d').value=a?.beschreibung||'';
+  document.getElementById('a-t').value=a?.typ||'';
+  document.getElementById('a-m').value=a?.marke||'';
+  document.getElementById('a-n').value=a?.artikelnummer||'';
+  document.getElementById('a-k').value=a?.kategorie_id||'';
+  document.getElementById('a-v').value=a?.verkaufspreis||'';
+  document.getElementById('a-e').value=a?.einkaufspreis||'';
+  document.getElementById('a-b').value=a?.bestand??0;
+  document.getElementById('a-mb2').value=a?.mindestbestand??0;
+  document.getElementById('a-u').value=a?.einheit||'Stk';
+  document.getElementById('bdla').style.display=a?'inline-flex':'none';
+  oM('ma');
+}
+async function saveA(){
+  if(!canE())return;
+  const d=document.getElementById('a-d').value.trim(),v=parseFloat(document.getElementById('a-v').value);
+  if(!d||isNaN(v)){toast('Beschreibung und Preis erforderlich','er');return;}
+  const p={beschreibung:d,typ:document.getElementById('a-t').value,marke:document.getElementById('a-m').value,artikelnummer:document.getElementById('a-n').value,kategorie_id:document.getElementById('a-k').value||null,verkaufspreis:v,bestand:parseInt(document.getElementById('a-b').value)||0,mindestbestand:parseInt(document.getElementById('a-mb2').value)||0,einkaufspreis:parseFloat(document.getElementById('a-e').value)||null,einheit:document.getElementById('a-u').value};
+  if(eA){await db.from('lager').update(p).eq('id',eA);toast('Artikel aktualisiert','ok');}
+  else{await db.from('lager').insert(p);toast('Artikel gespeichert','ok');}
+  cM('ma');await loadLA();
+}
+async function delA(){
+  if(!eA||!confirm('Artikel wirklich löschen?'))return;
+  await db.from('lager').delete().eq('id',eA);
+  toast('Artikel gelöscht');cM('ma');await loadLA();
+}
+
+// MATERIAL
+function addRow(a){
+  const tb=document.getElementById('mtb'),id='r'+Date.now(),tr=document.createElement('tr');
+  tr.id='mr-'+id;tr.dataset.lid=a?.lid||'';
+  tr.innerHTML=`<td><input type="number" value="${a?.anz||1}" min="1" style="width:55px;" oninput="cRow(this)"></td><td><input type="text" value="${a?.typ||''}" placeholder="Typ" style="min-width:70px;width:100%;"></td><td><input type="text" value="${a?.mrk||''}" placeholder="Marke" style="min-width:70px;width:100%;"></td><td><input type="text" value="${a?.dsc||''}" placeholder="Beschreibung" style="min-width:120px;width:100%;"></td><td><input type="number" value="${a?.prc||''}" step="0.01" placeholder="0.00" style="width:80px;" oninput="cRow(this)"></td><td class="mc" style="font-family:'DM Mono',monospace;font-size:13px;white-space:nowrap;">—</td><td><button class="btn bd sm" onclick="document.getElementById('mr-${id}').remove();updT()">✕</button></td>`;
+  tb.appendChild(tr);if(a?.prc)cRow(tr.querySelector('td:nth-child(5) input'));updT();
+}
+function cRow(el){
+  const tr=el.closest('tr'),anz=parseFloat(tr.querySelector('td:first-child input')?.value)||0,prc=parseFloat(tr.querySelector('td:nth-child(5) input')?.value)||0,c=tr.querySelector('.mc');
+  if(c)c.textContent=anz&&prc?'CHF '+(anz*prc).toFixed(2):'—';updT();
+}
+function openLM(){rML();oM('ml');}
+function rML(){
+  const q=(document.getElementById('mls')?.value||'').toLowerCase();
+  const f=LA.filter(a=>a.beschreibung.toLowerCase().includes(q)||(a.marke||'').toLowerCase().includes(q));
+  document.getElementById('mll').innerHTML=f.map(a=>{
+    const low=a.bestand<=(a.mindestbestand||2);
+    return`<div class="li" style="cursor:pointer;" onclick="aFL('${a.id}')"><div class="lil"><div class="lik">${a.beschreibung}</div><div class="lim">${[a.typ,a.marke].filter(Boolean).join(' · ')} · <span style="color:${low?'var(--red)':'var(--green)'};font-weight:500;">${a.bestand} ${a.einheit||'Stk'}</span></div></div><div style="font-family:'DM Mono',monospace;font-size:14px;color:var(--accent);flex-shrink:0;">CHF ${Number(a.verkaufspreis).toFixed(2)}</div></div>`;
   }).join('')||'<div style="color:var(--text3);font-size:13px;">Keine Artikel.</div>';
 }
-function addFL(id){
+function aFL(id){
   const a=LA.find(x=>x.id===id);if(!a)return;
-  if(a.bestand<=0&&!confirm(`"${a.beschreibung}" nicht auf Lager. Trotzdem?`))return;
-  addMatRow({typ:a.typ||'',mrk:a.marke||'',dsc:a.beschreibung,prc:a.verkaufspreis,anz:1,lid:a.id});
-  closeModal('mod-lager');toast(a.beschreibung+' hinzugefügt','ok');
+  if(a.bestand<=0&&!confirm(`"${a.beschreibung}" ist nicht auf Lager. Trotzdem hinzufügen?`))return;
+  addRow({typ:a.typ||'',mrk:a.marke||'',dsc:a.beschreibung,prc:a.verkaufspreis,anz:1,lid:a.id});
+  cM('ml');toast(a.beschreibung+' hinzugefügt','ok');
 }
 
-// ── TOTALE ──
-function updTot(){
+// TOTALS
+function updT(){
   let arb=0;MA.forEach(m=>{const h=parseFloat(document.getElementById('aw-'+m.id)?.value)||0;arb+=h*m.stundenansatz;});
-  let mat=0;document.querySelectorAll('#mat-tbody tr').forEach(tr=>{mat+=(parseFloat(tr.querySelector('td:first-child input')?.value)||0)*(parseFloat(tr.querySelector('td:nth-child(5) input')?.value)||0);});
-  let fz=0;
-  FZ.forEach(f=>{if(fzSelected[f.id]){fz+=f.preis;const h=parseFloat(document.getElementById(f.id+'-h')?.value)||0;if(h>0)fz+=h*65;}});
-  HM.forEach(h=>{if(hmSelected[h.id])fz+=h.preis;});
-  document.getElementById('tot-a').textContent='CHF '+arb.toFixed(2);
-  document.getElementById('tot-m').textContent='CHF '+mat.toFixed(2);
-  document.getElementById('tot-f').textContent='CHF '+fz.toFixed(2);
-  document.getElementById('tot-g').textContent='CHF '+(arb+mat+fz).toFixed(2);
+  let mat=0;document.querySelectorAll('#mtb tr').forEach(tr=>{mat+=(parseFloat(tr.querySelector('td:first-child input')?.value)||0)*(parseFloat(tr.querySelector('td:nth-child(5) input')?.value)||0);});
+  const fz=getFZTotal();
+  document.getElementById('ta').textContent='CHF '+arb.toFixed(2);
+  document.getElementById('tm').textContent='CHF '+mat.toFixed(2);
+  document.getElementById('tf').textContent='CHF '+fz.toFixed(2);
+  document.getElementById('tg').textContent='CHF '+(arb+mat+fz).toFixed(2);
 }
 
-// ── SIGNATUREN ──
-function setupSigs(){['sig-k','sig-t'].forEach(id=>{
+// SIGNATURES
+function setupSigs(){['sk','st'].forEach(id=>{
   const cv=document.getElementById(id);if(!cv)return;
-  const ctx=cv.getContext('2d');let dr=false,lx=0,ly=0;
+  const ctx=cv.getContext('2d');let dw=false,lx=0,ly=0;
   ctx.strokeStyle='#e8e0d0';ctx.lineWidth=2.5;ctx.lineCap='round';ctx.lineJoin='round';
   function gp(e){const r=cv.getBoundingClientRect(),sx=cv.width/r.width,sy=cv.height/r.height;return e.touches?{x:(e.touches[0].clientX-r.left)*sx,y:(e.touches[0].clientY-r.top)*sy}:{x:(e.clientX-r.left)*sx,y:(e.clientY-r.top)*sy};}
-  cv.addEventListener('mousedown',e=>{dr=true;const p=gp(e);lx=p.x;ly=p.y;});
-  cv.addEventListener('mousemove',e=>{if(!dr)return;const p=gp(e);ctx.beginPath();ctx.moveTo(lx,ly);ctx.lineTo(p.x,p.y);ctx.stroke();lx=p.x;ly=p.y;});
-  cv.addEventListener('mouseup',()=>dr=false);cv.addEventListener('mouseleave',()=>dr=false);
-  cv.addEventListener('touchstart',e=>{e.preventDefault();dr=true;const p=gp(e);lx=p.x;ly=p.y;},{passive:false});
-  cv.addEventListener('touchmove',e=>{e.preventDefault();if(!dr)return;const p=gp(e);ctx.beginPath();ctx.moveTo(lx,ly);ctx.lineTo(p.x,p.y);ctx.stroke();lx=p.x;ly=p.y;},{passive:false});
-  cv.addEventListener('touchend',()=>dr=false);
+  cv.addEventListener('mousedown',e=>{dw=true;const p=gp(e);lx=p.x;ly=p.y;});
+  cv.addEventListener('mousemove',e=>{if(!dw)return;const p=gp(e);ctx.beginPath();ctx.moveTo(lx,ly);ctx.lineTo(p.x,p.y);ctx.stroke();lx=p.x;ly=p.y;});
+  cv.addEventListener('mouseup',()=>dw=false);cv.addEventListener('mouseleave',()=>dw=false);
+  cv.addEventListener('touchstart',e=>{e.preventDefault();dw=true;const p=gp(e);lx=p.x;ly=p.y;},{passive:false});
+  cv.addEventListener('touchmove',e=>{e.preventDefault();if(!dw)return;const p=gp(e);ctx.beginPath();ctx.moveTo(lx,ly);ctx.lineTo(p.x,p.y);ctx.stroke();lx=p.x;ly=p.y;},{passive:false});
+  cv.addEventListener('touchend',()=>dw=false);
 });}
 function clrSig(id){const c=document.getElementById(id);c.getContext('2d').clearRect(0,0,c.width,c.height);}
 
-// ── RAPPORT SPEICHERN / BEARBEITEN ──
-async function saveRapport(abschluss){
+// RAPPORT SPEICHERN
+async function saveR(abs){
   const knd=document.getElementById('r-knd').value.trim();
   if(!knd){toast('Kundenname fehlt','er');return;}
-  const matRows=[];
-  for(const tr of document.querySelectorAll('#mat-tbody tr')){
+  const rows=[];
+  for(const tr of document.querySelectorAll('#mtb tr')){
     const anz=parseInt(tr.querySelector('td:first-child input')?.value)||0;
     const dsc=tr.querySelector('td:nth-child(4) input')?.value||'';
     if(!dsc&&anz===0)continue;
     const prc=parseFloat(tr.querySelector('td:nth-child(5) input')?.value)||0;
-    matRows.push({anz,typ:tr.querySelector('td:nth-child(2) input')?.value||'',mrk:tr.querySelector('td:nth-child(3) input')?.value||'',dsc,prc,lid:tr.dataset.lid||null});
+    rows.push({anz,typ:tr.querySelector('td:nth-child(2) input')?.value||'',mrk:tr.querySelector('td:nth-child(3) input')?.value||'',dsc,prc,lid:tr.dataset.lid||null});
   }
-  if(abschluss){
-    const warn=[];
-    for(const r of matRows){if(r.lid){const a=LA.find(x=>x.id===r.lid);if(a&&a.bestand<r.anz)warn.push(`"${a.beschreibung}": Bestand ${a.bestand}, benötigt ${r.anz}`);}}
-    if(warn.length&&!confirm('⚠ Ungenügender Bestand:\n\n'+warn.join('\n')+'\n\nTrotzdem?'))return;
+  if(abs){
+    const w=[];
+    for(const r of rows){if(r.lid){const a=LA.find(x=>x.id===r.lid);if(a&&a.bestand<r.anz)w.push(`"${a.beschreibung}": Bestand ${a.bestand}, benötigt ${r.anz}`);}}
+    if(w.length&&!confirm('Achtung — ungenügender Bestand:\n\n'+w.join('\n')+'\n\nTrotzdem abschliessen?'))return;
   }
-  const rapData={datum:document.getElementById('r-dat').value,kundenname:knd,adresse:document.getElementById('r-adr').value,mail:document.getElementById('r-mai').value,telefon:document.getElementById('r-tel').value,projektnummer:document.getElementById('r-prj').value,auftragstyp:AT,notizen:document.getElementById('r-not').value,status:abschluss?'abgeschlossen':'offen',abgeschlossen:abschluss,abgeschlossen_am:abschluss?new Date().toISOString():null};
-  let rapId=editRapId;
-  if(editRapId){
-    // Update existing
-    await db.from('rapporte').update(rapData).eq('id',editRapId);
-    await db.from('rapport_positionen').delete().eq('rapport_id',editRapId);
-    await db.from('rapport_arbeitsaufwand').delete().eq('rapport_id',editRapId);
-  }else{
-    const{data:rap,error}=await db.from('rapporte').insert(rapData).select().single();
-    if(error){toast('Fehler: '+error.message,'er');return;}
-    rapId=rap.id;
-  }
-  if(matRows.length)await db.from('rapport_positionen').insert(matRows.map(r=>({rapport_id:rapId,anzahl:r.anz,typ:r.typ,marke:r.mrk,beschreibung:r.dsc,einzelpreis:r.prc,gesamtpreis:r.anz*r.prc,lager_id:r.lid||null,abgebucht:abschluss&&!!r.lid})));
-  const awRows=MA.map(m=>{const h=parseFloat(document.getElementById('aw-'+m.id)?.value)||0;return h>0?{rapport_id:rapId,mitarbeiter_id:m.id,mitarbeiter_name:m.name,stundenansatz:m.stundenansatz,anzahl_stunden:h}:null;}).filter(Boolean);
-  if(awRows.length)await db.from('rapport_arbeitsaufwand').insert(awRows);
-  if(abschluss&&!editRapId){
-    for(const r of matRows){if(r.lid&&r.anz>0){const a=LA.find(x=>x.id===r.lid);if(a)await db.from('lager').update({bestand:Math.max(0,a.bestand-r.anz)}).eq('id',r.lid);}}
+  const{data:rap,error}=await db.from('rapporte').insert({
+    datum:document.getElementById('r-dat').value,kundenname:knd,
+    adresse:document.getElementById('r-adr').value,mail:document.getElementById('r-mai').value,
+    telefon:document.getElementById('r-tel').value,projektnummer:document.getElementById('r-prj').value,
+    auftragstyp:AT,notizen:document.getElementById('r-not').value,
+    status:abs?'abgeschlossen':'offen',abgeschlossen:abs,
+    abgeschlossen_am:abs?new Date().toISOString():null
+  }).select().single();
+  if(error){toast('Fehler beim Speichern','er');console.error(error);return;}
+  const pos=rows.map(r=>({rapport_id:rap.id,anzahl:r.anz,typ:r.typ,marke:r.mrk,beschreibung:r.dsc,einzelpreis:r.prc,gesamtpreis:r.anz*r.prc,lager_id:r.lid||null,abgebucht:abs&&!!r.lid}));
+  if(pos.length)await db.from('rapport_positionen').insert(pos);
+  if(abs){
+    for(const r of rows){if(r.lid&&r.anz>0){const a=LA.find(x=>x.id===r.lid);if(a)await db.from('lager').update({bestand:Math.max(0,a.bestand-r.anz)}).eq('id',r.lid);}}
     await loadLA();
   }
-  toast(abschluss?'Rapport abgeschlossen!':editRapId?'Rapport aktualisiert!':'Rapport gespeichert!','ok');
-  if(abschluss||editRapId)resetR();
-}
-async function loadRapportIntoForm(readOnly){
-  if(!rapDetail)return;
-  const{r,pos,aw}=rapDetail;
-  closeModal('mod-rap');
-  showTab('rapport');
-  editRapId=readOnly?null:r.id;
-  document.getElementById('rap-page-title').textContent=readOnly?'Rapport ansehen (schreibgeschützt)':'Rapport bearbeiten';
-  document.getElementById('btn-rap-cancel-edit').classList.remove('hidden');
-  document.getElementById('btn-rap-cancel-edit').textContent=readOnly?'← Zurück':'Abbrechen';
-  document.getElementById('btn-save-open').style.display=readOnly?'none':'';
-  document.getElementById('btn-save-close').style.display=readOnly?'none':'';
-  // disable/enable all form inputs
-  setTimeout(()=>{
-    const fields=['r-dat','r-prj','r-knd','r-adr','r-mai','r-tel','r-not'];
-    fields.forEach(id=>{const e=document.getElementById(id);if(e)e.disabled=readOnly;});
-    document.querySelectorAll('#mat-tbody input,#mat-tbody select').forEach(e=>e.disabled=readOnly);
-    document.querySelectorAll('#aw-list input').forEach(e=>e.disabled=readOnly);
-    document.querySelectorAll('.fz-chk,.fz-h').forEach(e=>e.disabled=readOnly);
-    document.querySelectorAll('.fz-chk').forEach(e=>e.style.pointerEvents=readOnly?'none':'');
-    document.querySelectorAll('.rb').forEach(e=>e.style.pointerEvents=readOnly?'none':'');
-    document.querySelectorAll('#mat-tbody .btn').forEach(e=>e.style.display=readOnly?'none':'');
-    document.querySelector('.brow .btn-g[onclick="openLagerModal()"]') && (document.querySelector('.brow .btn-g[onclick="openLagerModal()"]').style.display=readOnly?'none':'');
-  },100);
-  document.getElementById('r-dat').value=r.datum||'';
-  document.getElementById('r-prj').value=r.projektnummer||'';
-  document.getElementById('r-knd').value=r.kundenname||'';
-  document.getElementById('r-adr').value=r.adresse||'';
-  document.getElementById('r-mai').value=r.mail||'';
-  document.getElementById('r-tel').value=r.telefon||'';
-  document.getElementById('r-not').value=r.notizen||'';
-  AT=r.auftragstyp||'Auftrag Abgeschlossen';
-  document.querySelectorAll('.rb').forEach(b=>b.classList.remove('on'));
-  document.querySelectorAll('.rb').forEach(b=>{if(b.textContent.trim()===AT||b.getAttribute('onclick')?.includes(AT))b.classList.add('on');});
-  document.getElementById('mat-tbody').innerHTML='';
-  pos.forEach(p=>addMatRow({typ:p.typ||'',mrk:p.marke||'',dsc:p.beschreibung,prc:p.einzelpreis||0,anz:p.anzahl,lid:p.lager_id||''}));
-  MA.forEach(m=>{const el=document.getElementById('aw-'+m.id);if(el)el.value='';});
-  aw.forEach(a=>{const el=document.getElementById('aw-'+a.mitarbeiter_id);if(el)el.value=a.anzahl_stunden;});
-  updTot();toast('Rapport geladen — jetzt bearbeiten','ok');
-}
-function cancelEditRap(){
-  editRapId=null;
-  document.getElementById('rap-page-title').textContent='Neuer Servicerapport';
-  document.getElementById('btn-rap-cancel-edit').classList.add('hidden');
-  document.getElementById('btn-rap-cancel-edit').textContent='Abbrechen';
-  document.getElementById('btn-save-open').style.display='';
-  document.getElementById('btn-save-close').style.display='';
-  resetR(true);
-}
-async function duplicateRapport(){
-  if(!rapDetail)return;
-  const{r,pos,aw}=rapDetail;
-  closeModal('mod-rap');showTab('rapport');
-  editRapId=null;
-  document.getElementById('rap-page-title').textContent='Neuer Servicerapport (Duplikat)';
-  document.getElementById('r-dat').value=new Date().toISOString().split('T')[0];
-  document.getElementById('r-prj').value='';
-  document.getElementById('r-knd').value=r.kundenname||'';
-  document.getElementById('r-adr').value=r.adresse||'';
-  document.getElementById('r-mai').value=r.mail||'';
-  document.getElementById('r-tel').value=r.telefon||'';
-  document.getElementById('r-not').value=r.notizen||'';
-  AT=r.auftragstyp||'Auftrag Abgeschlossen';
-  document.getElementById('mat-tbody').innerHTML='';
-  pos.forEach(p=>addMatRow({typ:p.typ||'',mrk:p.marke||'',dsc:p.beschreibung,prc:p.einzelpreis||0,anz:p.anzahl,lid:p.lager_id||''}));
-  MA.forEach(m=>{const el=document.getElementById('aw-'+m.id);if(el)el.value='';});
-  aw.forEach(a=>{const el=document.getElementById('aw-'+a.mitarbeiter_id);if(el)el.value=a.anzahl_stunden;});
-  updTot();toast('Als Vorlage geladen — neuer Rapport','ok');
+  const awR=[];
+  for(const m of MA){const h=parseFloat(document.getElementById('aw-'+m.id)?.value)||0;if(h>0)awR.push({rapport_id:rap.id,mitarbeiter_id:m.id,mitarbeiter_name:m.name,stundenansatz:m.stundenansatz,anzahl_stunden:h});}
+  if(awR.length)await db.from('rapport_arbeitsaufwand').insert(awR);
+  toast(abs?'Rapport abgeschlossen & Lager aktualisiert!':'Rapport gespeichert!','ok');
+  if(abs)resetR(true);
 }
 
-// ── PDF ──
+// PDF
 function doPDF(){
-  const d={datum:document.getElementById('r-dat').value,kunde:document.getElementById('r-knd').value,adresse:document.getElementById('r-adr').value,mail:document.getElementById('r-mai').value,tel:document.getElementById('r-tel').value,prj:document.getElementById('r-prj').value,not:document.getElementById('r-not').value,at:AT,mat:[],aw:[],ta:document.getElementById('tot-a').textContent,tm:document.getElementById('tot-m').textContent,tf:document.getElementById('tot-f').textContent,tg:document.getElementById('tot-g').textContent,sk:document.getElementById('sig-k').toDataURL('image/png'),st:document.getElementById('sig-t').toDataURL('image/png')};
-  document.querySelectorAll('#mat-tbody tr').forEach(tr=>{const anz=tr.querySelector('td:first-child input')?.value||'';const dsc=tr.querySelector('td:nth-child(4) input')?.value||'';if(!dsc)return;const p=parseFloat(tr.querySelector('td:nth-child(5) input')?.value)||0;d.mat.push([anz,tr.querySelector('td:nth-child(2) input')?.value||'',tr.querySelector('td:nth-child(3) input')?.value||'',dsc,p?'CHF '+p.toFixed(2):'—',p?'CHF '+(parseInt(anz)*p).toFixed(2):'—']);});
-  MA.forEach(m=>{const h=parseFloat(document.getElementById('aw-'+m.id)?.value)||0;if(h>0)d.aw.push([m.name,h+' h','CHF '+m.stundenansatz.toFixed(2)+'/h','CHF '+(h*m.stundenansatz).toFixed(2)]);});
-  // Collect FZ/HM items for PDF
-  d.fzItems=[];
-  FZ.forEach(f=>{
-    if(fzSelected[f.id]){
-      const h=parseFloat(document.getElementById(f.id+'-h')?.value)||0;
-      const tot=f.preis+(h>0?h*65:0);
-      const desc=h>0?f.label+' + '+h+'h Reisezeit':f.label;
-      d.fzItems.push([desc,'CHF '+f.preis.toFixed(2),h>0?'+ CHF '+(h*65).toFixed(2):'—','CHF '+tot.toFixed(2)]);
-    }
+  const d={
+    dat:document.getElementById('r-dat').value,knd:document.getElementById('r-knd').value,
+    adr:document.getElementById('r-adr').value,mai:document.getElementById('r-mai').value,
+    tel:document.getElementById('r-tel').value,prj:document.getElementById('r-prj').value,
+    not:document.getElementById('r-not').value,at:AT,mat:[],aw:[],fzItems:getFZItems(),
+    ta:document.getElementById('ta').textContent,tm:document.getElementById('tm').textContent,
+    tf:document.getElementById('tf').textContent,tg:document.getElementById('tg').textContent,
+    sk:document.getElementById('sk').toDataURL('image/png'),
+    st:document.getElementById('st').toDataURL('image/png')
+  };
+  document.querySelectorAll('#mtb tr').forEach(tr=>{
+    const anz=tr.querySelector('td:first-child input')?.value||'';
+    const dsc=tr.querySelector('td:nth-child(4) input')?.value||'';
+    if(!dsc)return;
+    const p=parseFloat(tr.querySelector('td:nth-child(5) input')?.value)||0;
+    d.mat.push([anz,tr.querySelector('td:nth-child(2) input')?.value||'',tr.querySelector('td:nth-child(3) input')?.value||'',dsc,p?'CHF '+p.toFixed(2):'—',p?'CHF '+(parseInt(anz)*p).toFixed(2):'—']);
   });
-  const hmLabelsMap={hm1:'Klein- und Hilfsmaterial',hm2:'Bohrmaterial / Montagematerial',hm3:'Servicenotebook mit Lizenzen',hm4:'Messgerät mit Messlizenz'};
-  const hmPreisMap={hm1:24.5,hm2:24.5,hm3:35,hm4:35};
-  HM.forEach(h=>{
-    if(hmSelected[h.id]){
-      d.fzItems.push([hmLabelsMap[h.id],'CHF '+hmPreisMap[h.id].toFixed(2),'—','CHF '+hmPreisMap[h.id].toFixed(2)]);
-    }
-  });
-  genPDF(d);
+  MA.forEach(m=>{const h=parseFloat(document.getElementById('aw-'+m.id)?.value)||0;if(h>0)d.aw.push([m.name,h+' h','CHF '+m.stundenansatz.toFixed(2),'CHF '+(h*m.stundenansatz).toFixed(2)]);});
+  gPDF(d);
 }
-function genPDF(d){
+function gPDF(d){
   const{jsPDF}=window.jspdf;const doc=new jsPDF({unit:'mm',format:'a4'});const W=210,mg=18;let y=18;
   doc.setFont('helvetica','bold');doc.setFontSize(18);doc.text('Servicerapport',mg,y);y+=7;
   doc.setFont('helvetica','normal');doc.setFontSize(9);doc.setTextColor(120);doc.text('ottiger media systeme',W-mg,18,{align:'right'});doc.setTextColor(0);y+=5;
   doc.setFontSize(10);
-  [['Datum',d.datum],['Kundenname',d.kunde],['Adresse/PLZ',d.adresse],['Mail',d.mail],['Telefon',d.tel],['Projektnummer',d.prj],['Auftragstyp',d.at]].forEach(([l,v])=>{if(!v)return;doc.setFont('helvetica','bold');doc.text(l+':',mg,y);doc.setFont('helvetica','normal');doc.text(v,65,y);y+=6;});
+  [['Datum',d.dat],['Kundenname',d.knd],['Adresse/PLZ',d.adr],['Mail',d.mai],['Telefon',d.tel],['Projektnummer',d.prj],['Auftragstyp',d.at]].forEach(([l,v])=>{if(!v)return;doc.setFont('helvetica','bold');doc.text(l+':',mg,y);doc.setFont('helvetica','normal');doc.text(v,65,y);y+=6;});
   if(d.not){y+=2;doc.setFont('helvetica','bold');doc.text('Notizen:',mg,y);y+=5;doc.setFont('helvetica','normal');const ls=doc.splitTextToSize(d.not,W-2*mg);doc.text(ls,mg,y);y+=ls.length*5+4;}
-  if(d.mat&&d.mat.length){y+=2;doc.setFont('helvetica','bold');doc.setFontSize(10);doc.text('Material',mg,y);y+=5;doc.setFontSize(8);doc.setFont('helvetica','bold');const cx=[mg,mg+12,mg+40,mg+70,mg+130,mg+155];['Anz','Typ','Marke','Beschreibung','Preis','Total'].forEach((h,i)=>doc.text(h,cx[i],y));y+=4;doc.setDrawColor(180);doc.line(mg,y,W-mg,y);y+=3;doc.setFont('helvetica','normal');d.mat.forEach(r=>{r.forEach((c,i)=>doc.text(String(c),cx[i],y));y+=5;});y+=3;}
-  if(d.aw&&d.aw.length){y+=2;doc.setFont('helvetica','bold');doc.setFontSize(10);doc.text('Arbeitsaufwand',mg,y);y+=5;doc.setFontSize(8);doc.setFont('helvetica','bold');const ax=[mg,mg+80,mg+112,mg+146];['Mitarbeiter','Stunden','Ansatz','Total'].forEach((h,i)=>doc.text(h,ax[i],y));y+=4;doc.setDrawColor(180);doc.line(mg,y,W-mg,y);y+=3;doc.setFont('helvetica','normal');d.aw.forEach(r=>{r.forEach((c,i)=>doc.text(String(c),ax[i],y));y+=5;});y+=3;}
-  // Fahrzeugpauschale & Hilfsmittel
+  if(d.mat.length){
+    y+=2;doc.setFont('helvetica','bold');doc.setFontSize(10);doc.text('Material',mg,y);y+=5;
+    doc.setFontSize(8);doc.setFont('helvetica','bold');
+    const cx=[mg,mg+12,mg+40,mg+70,mg+130,mg+155];
+    ['Anz','Typ','Marke','Beschreibung','Preis','Total'].forEach((h,i)=>doc.text(h,cx[i],y));
+    y+=4;doc.setDrawColor(180);doc.line(mg,y,W-mg,y);y+=3;
+    doc.setFont('helvetica','normal');d.mat.forEach(r=>{r.forEach((c,i)=>doc.text(String(c),cx[i],y));y+=5;});y+=3;
+  }
+  if(d.aw.length){
+    y+=2;doc.setFont('helvetica','bold');doc.setFontSize(10);doc.text('Arbeitsaufwand',mg,y);y+=5;
+    doc.setFontSize(8);doc.setFont('helvetica','bold');
+    const ax=[mg,mg+80,mg+105,mg+140];
+    ['Mitarbeiter','Stunden','Ansatz','Total'].forEach((h,i)=>doc.text(h,ax[i],y));
+    y+=4;doc.setDrawColor(180);doc.line(mg,y,W-mg,y);y+=3;
+    doc.setFont('helvetica','normal');d.aw.forEach(r=>{r.forEach((c,i)=>doc.text(c,ax[i],y));y+=5;});y+=3;
+  }
   if(d.fzItems&&d.fzItems.length){
     y+=2;doc.setFont('helvetica','bold');doc.setFontSize(10);doc.text('Fahrzeugpauschale & Hilfsmittel',mg,y);y+=5;
     doc.setFontSize(8);doc.setFont('helvetica','bold');
     const fx=[mg,mg+90,mg+130,mg+158];
     ['Position','Pauschale','Reisezeit','Total'].forEach((h,i)=>doc.text(h,fx[i],y));
     y+=4;doc.setDrawColor(180);doc.line(mg,y,W-mg,y);y+=3;
-    doc.setFont('helvetica','normal');
-    d.fzItems.forEach(r=>{r.forEach((c,i)=>doc.text(String(c),fx[i],y));y+=5;});
-    y+=3;
+    doc.setFont('helvetica','normal');d.fzItems.forEach(r=>{r.forEach((c,i)=>doc.text(String(c),fx[i],y));y+=5;});y+=3;
   }
   y+=4;doc.setDrawColor(180);doc.line(mg,y,W-mg,y);y+=6;
-  [['Arbeitsaufwand',d.ta],['Material',d.tm],['Fahrzeug & Hilfsmittel',d.tf],['Total (exkl. MwSt.)',d.tg]].forEach(([l,v],i)=>{if(i===3){doc.setFont('helvetica','bold');doc.setFontSize(11);}else{doc.setFont('helvetica','normal');doc.setFontSize(9);}doc.text(l,mg,y);doc.text(v||'—',W-mg,y,{align:'right'});y+=6;});
+  [['Arbeitsaufwand',d.ta],['Material',d.tm],['Fahrzeug & Hilfsmittel',d.tf],['Total (exkl. MwSt.)',d.tg]].forEach(([l,v],i)=>{
+    if(i===3){doc.setFont('helvetica','bold');doc.setFontSize(11);}else{doc.setFont('helvetica','normal');doc.setFontSize(9);}
+    doc.text(l,mg,y);doc.text(v,W-mg,y,{align:'right'});y+=6;
+  });
   y+=10;if(y>220){doc.addPage();y=20;}
   doc.setFont('helvetica','normal');doc.setFontSize(9);doc.setTextColor(100);
   doc.text('Unterschrift Auftraggeber',mg,y);doc.text('Unterschrift Techniker',W/2+5,y);y+=2;
-  try{if(d.sk&&d.sk.length>100)doc.addImage(d.sk,'PNG',mg,y,75,25);}catch(e){}
-  try{if(d.st&&d.st.length>100)doc.addImage(d.st,'PNG',W/2+5,y,75,25);}catch(e){}
+  try{doc.addImage(d.sk,'PNG',mg,y,75,25);}catch(e){}try{doc.addImage(d.st,'PNG',W/2+5,y,75,25);}catch(e){}
   y+=27;doc.setDrawColor(150);doc.line(mg,y,mg+75,y);doc.line(W/2+5,y,W/2+80,y);
-  doc.save('Rapport_'+(d.kunde||'OMS')+'_'+d.datum+'.pdf');
+  doc.save('Rapport_'+(d.knd||'OMS')+'_'+d.dat+'.pdf');
   toast('PDF exportiert!','ok');
 }
 
-// ── ARCHIV ──
-async function loadArchiv(){
+// ARCHIV
+async function loadArc(){
   const{data}=await db.from('rapporte').select('*').order('erstellt_am',{ascending:false});
-  AR=data||[];filterArchiv();
+  AR=data||[];fArchiv();
 }
-function filterArchiv(){
-  const q=(document.getElementById('arc-q')?.value||'').toLowerCase();
+function fArchiv(){
+  const q=(document.getElementById('asrc')?.value||'').toLowerCase();
   const f=AR.filter(r=>r.kundenname.toLowerCase().includes(q)||(r.projektnummer||'').toLowerCase().includes(q)||(r.datum||'').includes(q));
-  const el=document.getElementById('arc-list');
+  const el=document.getElementById('alist');
   if(!f.length){el.innerHTML='<div style="color:var(--text3);font-size:13px;">Keine Rapporte gefunden.</div>';return;}
   el.innerHTML=f.map(r=>`
-    <div class="r-item">
-      <div class="r-il"><div class="r-ik">${r.kundenname}</div><div class="r-im">${r.datum||'—'} · ${r.projektnummer||'kein Projekt'} · ${r.auftragstyp||''}</div></div>
-      <div class="r-ir">
-        <span class="bdg ${r.abgeschlossen?'b-green':'b-blue'}">${r.abgeschlossen?'Abgeschlossen':'Offen'}</span>
-        <button class="btn btn-g sm" onclick="openRapDetail('${r.id}')">Detail</button>
+    <div class="li">
+      <div class="lil"><div class="lik">${r.kundenname}</div><div class="lim">${r.datum} · ${r.projektnummer||'—'} · ${r.auftragstyp||''}</div></div>
+      <div class="lir">
+        <span class="bdg ${r.abgeschlossen?'bgr':'bbl'}">${r.abgeschlossen?'Abgeschlossen':'Offen'}</span>
+        <button class="btn bg2b sm" onclick="openRD('${r.id}')">Detail</button>
       </div>
     </div>`).join('');
 }
-async function openRapDetail(id){
-  const[{data:r},{data:pos},{data:aw}]=await Promise.all([db.from('rapporte').select('*').eq('id',id).single(),db.from('rapport_positionen').select('*').eq('rapport_id',id),db.from('rapport_arbeitsaufwand').select('*').eq('rapport_id',id)]);
-  rapDetail={r,pos:pos||[],aw:aw||[]};editRapId=id;
-  document.getElementById('mod-rap-t').textContent=r.kundenname+' — '+r.datum;
-  document.getElementById('btn-reopen-rap').style.display=r.abgeschlossen?'inline-flex':'none';
-  const isAbs=r.abgeschlossen;
-  const editBtn=document.getElementById('btn-edit-rap');
-  editBtn.textContent=isAbs?'Im Formular ansehen':'Bearbeiten';
-  editBtn.onclick=function(){loadRapportIntoForm(isAbs);};
+async function openRD(id){
+  const[{data:r},{data:pos},{data:aw}]=await Promise.all([
+    db.from('rapporte').select('*').eq('id',id).single(),
+    db.from('rapport_positionen').select('*').eq('rapport_id',id),
+    db.from('rapport_arbeitsaufwand').select('*').eq('rapport_id',id)
+  ]);
+  RD={r,pos:pos||[],aw:aw||[]};
   let h=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;font-size:14px;">
-    <div><div style="font-size:11px;color:var(--text3);">Datum</div><div style="margin-top:3px;">${r.datum||'—'}</div></div>
-    <div><div style="font-size:11px;color:var(--text3);">Projekt</div><div style="margin-top:3px;">${r.projektnummer||'—'}</div></div>
-    <div style="grid-column:span 2;"><div style="font-size:11px;color:var(--text3);">Kunde</div><div style="margin-top:3px;font-weight:500;">${r.kundenname}</div></div>
-    <div><div style="font-size:11px;color:var(--text3);">Adresse</div><div style="margin-top:3px;">${r.adresse||'—'}</div></div>
-    <div><div style="font-size:11px;color:var(--text3);">Status</div><div style="margin-top:6px;"><span class="bdg ${r.abgeschlossen?'b-green':'b-blue'}">${r.abgeschlossen?'Abgeschlossen':'Offen'}</span></div></div>
+    <div><div style="font-size:11px;color:var(--text3);">Datum</div>${r.datum}</div>
+    <div><div style="font-size:11px;color:var(--text3);">Projekt</div>${r.projektnummer||'—'}</div>
+    <div style="grid-column:span 2;"><div style="font-size:11px;color:var(--text3);">Kunde</div><strong>${r.kundenname}</strong></div>
+    <div style="grid-column:span 2;"><div style="font-size:11px;color:var(--text3);">Adresse</div>${r.adresse||'—'}</div>
+    <div><div style="font-size:11px;color:var(--text3);">Status</div><span class="bdg ${r.abgeschlossen?'bgr':'bbl'}">${r.abgeschlossen?'Abgeschlossen':'Offen'}</span></div>
+    <div><div style="font-size:11px;color:var(--text3);">Auftragstyp</div>${r.auftragstyp||'—'}</div>
   </div>`;
-  if(r.notizen)h+=`<div style="margin-bottom:14px;"><div style="font-size:11px;color:var(--text3);margin-bottom:5px;">Notizen</div><div style="font-size:14px;">${r.notizen}</div></div>`;
-  if(pos?.length){const mt=pos.reduce((s,p)=>s+Number(p.gesamtpreis||0),0);h+=`<div style="font-size:11px;color:var(--text3);margin-bottom:6px;text-transform:uppercase;letter-spacing:.6px;">Material</div><div class="tw" style="margin-bottom:14px;"><table><thead><tr><th>Anz</th><th>Beschreibung</th><th>Preis</th><th>Total</th></tr></thead><tbody>${pos.map(p=>`<tr><td>${p.anzahl}</td><td>${p.beschreibung}</td><td>CHF ${Number(p.einzelpreis||0).toFixed(2)}</td><td>CHF ${Number(p.gesamtpreis||0).toFixed(2)}</td></tr>`).join('')}<tr><td colspan="3" style="font-weight:500;color:var(--text3);">Total Material</td><td style="font-weight:600;color:var(--accent);">CHF ${mt.toFixed(2)}</td></tr></tbody></table></div>`;}
-  if(aw?.length){const at=aw.reduce((s,a)=>s+a.anzahl_stunden*a.stundenansatz,0);h+=`<div style="font-size:11px;color:var(--text3);margin-bottom:6px;text-transform:uppercase;letter-spacing:.6px;">Arbeitsaufwand</div><div class="tw"><table><thead><tr><th>Mitarbeiter</th><th>Stunden</th><th>Ansatz</th><th>Total</th></tr></thead><tbody>${aw.map(a=>`<tr><td>${a.mitarbeiter_name}</td><td>${a.anzahl_stunden} h</td><td>CHF ${Number(a.stundenansatz).toFixed(2)}/h</td><td>CHF ${(a.anzahl_stunden*a.stundenansatz).toFixed(2)}</td></tr>`).join('')}<tr><td colspan="3" style="font-weight:500;color:var(--text3);">Total Arbeit</td><td style="font-weight:600;color:var(--accent);">CHF ${at.toFixed(2)}</td></tr></tbody></table></div>`;}
-  document.getElementById('mod-rap-content').innerHTML=h;openModal('mod-rap');
+  if(r.notizen)h+=`<div style="margin-bottom:14px;"><div style="font-size:11px;color:var(--text3);margin-bottom:4px;">Notizen</div>${r.notizen}</div>`;
+  if(pos?.length)h+=`<div style="font-size:11px;color:var(--text3);margin-bottom:6px;">MATERIAL</div><div class="tw" style="margin-bottom:14px;"><table><thead><tr><th>Anz</th><th>Beschreibung</th><th>Preis</th><th>Total</th></tr></thead><tbody>${pos.map(p=>`<tr><td>${p.anzahl}</td><td>${p.beschreibung}</td><td>CHF ${Number(p.einzelpreis||0).toFixed(2)}</td><td>CHF ${Number(p.gesamtpreis||0).toFixed(2)}</td></tr>`).join('')}</tbody></table></div>`;
+  if(aw?.length)h+=`<div style="font-size:11px;color:var(--text3);margin-bottom:6px;">ARBEITSAUFWAND</div><div class="tw"><table><thead><tr><th>Mitarbeiter</th><th>Stunden</th><th>Total</th></tr></thead><tbody>${aw.map(a=>`<tr><td>${a.mitarbeiter_name}</td><td>${a.anzahl_stunden} h</td><td>CHF ${(a.anzahl_stunden*a.stundenansatz).toFixed(2)}</td></tr>`).join('')}</tbody></table></div>`;
+  document.getElementById('mrc').innerHTML=h;oM('mr');
 }
-function pdfFromData(){
-  if(!rapDetail)return;const{r,pos,aw}=rapDetail;
-  const d={datum:r.datum,kunde:r.kundenname,adresse:r.adresse||'',mail:r.mail||'',tel:r.telefon||'',prj:r.projektnummer||'',not:r.notizen||'',at:r.auftragstyp||'',mat:pos.map(p=>[p.anzahl,p.typ||'',p.marke||'',p.beschreibung,'CHF '+Number(p.einzelpreis||0).toFixed(2),'CHF '+Number(p.gesamtpreis||0).toFixed(2)]),aw:aw.map(a=>[a.mitarbeiter_name,a.anzahl_stunden+' h','CHF '+Number(a.stundenansatz).toFixed(2)+'/h','CHF '+(a.anzahl_stunden*a.stundenansatz).toFixed(2)]),ta:'CHF '+aw.reduce((s,a)=>s+a.anzahl_stunden*a.stundenansatz,0).toFixed(2),tm:'CHF '+pos.reduce((s,p)=>s+Number(p.gesamtpreis||0),0).toFixed(2),tf:'CHF 0.00',tg:'CHF '+(aw.reduce((s,a)=>s+a.anzahl_stunden*a.stundenansatz,0)+pos.reduce((s,p)=>s+Number(p.gesamtpreis||0),0)).toFixed(2),sk:'',st:''};
-  genPDF(d);
-}
-async function reopenRapport(){
-  if(!editRapId||!confirm('Rapport wieder als offen markieren?'))return;
-  await db.from('rapporte').update({abgeschlossen:false,status:'offen',abgeschlossen_am:null}).eq('id',editRapId);
-  toast('Rapport wieder geöffnet','ok');closeModal('mod-rap');loadArchiv();
+function pdfFD(){
+  if(!RD)return;
+  const{r,pos,aw}=RD;
+  const d={
+    dat:r.datum,knd:r.kundenname,adr:r.adresse||'',mai:r.mail||'',tel:r.telefon||'',
+    prj:r.projektnummer||'',not:r.notizen||'',at:r.auftragstyp||'',fzItems:[],
+    mat:pos.map(p=>[p.anzahl,p.typ||'',p.marke||'',p.beschreibung,'CHF '+Number(p.einzelpreis||0).toFixed(2),'CHF '+Number(p.gesamtpreis||0).toFixed(2)]),
+    aw:aw.map(a=>[a.mitarbeiter_name,a.anzahl_stunden+' h','CHF '+Number(a.stundenansatz).toFixed(2),'CHF '+(a.anzahl_stunden*a.stundenansatz).toFixed(2)]),
+    ta:'CHF '+aw.reduce((s,a)=>s+a.anzahl_stunden*a.stundenansatz,0).toFixed(2),
+    tm:'CHF '+pos.reduce((s,p)=>s+Number(p.gesamtpreis||0),0).toFixed(2),
+    tf:'CHF 0.00',
+    tg:'CHF '+[...aw.map(a=>a.anzahl_stunden*a.stundenansatz),...pos.map(p=>Number(p.gesamtpreis||0))].reduce((s,v)=>s+v,0).toFixed(2),
+    sk:'',st:''
+  };
+  gPDF(d);
 }
 
-// ── BENUTZER ──
-async function loadUsers(){
-  if(!isAdmin())return;
+// BENUTZER
+async function loadU(){
+  if(!isAdm())return;
   const{data}=await db.from('benutzer').select('*').order('name');
-  const el=document.getElementById('user-list');if(!el)return;
-  const rb={admin:'b-purple',lager:'b-green',techniker:'b-blue'},rn={admin:'Admin',lager:'Lager',techniker:'Techniker'};
-  el.innerHTML=(data||[]).map(u=>`<div class="u-item"><div><div class="u-n">${u.name}${!u.aktiv?' <span style="color:var(--text3);font-size:11px;">(inaktiv)</span>':''}</div><div class="u-m">@${u.benutzername}</div></div><div style="display:flex;align-items:center;gap:8px;"><span class="bdg ${rb[u.rolle]||'b-blue'}">${rn[u.rolle]||u.rolle}</span><button class="btn btn-g sm" onclick="openUserModal('${u.id}')">✎</button></div></div>`).join('');
+  const el=document.getElementById('ulist');
+  if(!data?.length){el.innerHTML='<div style="color:var(--text3);font-size:13px;">Keine Benutzer.</div>';return;}
+  const rl={admin:'bpu',lager:'bgr',techniker:'bbl'};
+  const rn={admin:'Admin',lager:'Lager',techniker:'Techniker'};
+  el.innerHTML=data.map(u=>`<div class="ui"><div class="uii"><div class="uin">${u.name}</div><div class="uim">@${u.benutzername} · ${u.aktiv?'Aktiv':'Inaktiv'}</div></div><div style="display:flex;align-items:center;gap:8px;"><span class="bdg ${rl[u.rolle]||'bbl'}">${rn[u.rolle]||u.rolle}</span><button class="btn bg2b sm" onclick="openUM('${u.id}')">✎</button></div></div>`).join('');
 }
-function openUserModal(id){
-  eUsr=id||null;
-  document.getElementById('mod-user-t').textContent=id?'Benutzer bearbeiten':'Neuer Benutzer';
-  document.getElementById('u-un').value='';document.getElementById('u-nm').value='';document.getElementById('u-pw').value='';document.getElementById('u-ro').value='techniker';
-  document.getElementById('btn-del-usr').style.display=id?'inline-flex':'none';
-  if(id)db.from('benutzer').select('*').eq('id',id).single().then(({data:u})=>{if(u){document.getElementById('u-un').value=u.benutzername;document.getElementById('u-nm').value=u.name;document.getElementById('u-ro').value=u.rolle;}});
-  openModal('mod-user');
+function openUM(id){
+  eU=id||null;
+  document.getElementById('mut').textContent=id?'Benutzer bearbeiten':'Neuer Benutzer';
+  document.getElementById('u-n').value='';document.getElementById('u-nm').value='';
+  document.getElementById('u-p').value='';document.getElementById('u-r').value='techniker';
+  document.getElementById('bdlu').style.display=id?'inline-flex':'none';
+  if(id){
+    db.from('benutzer').select('*').eq('id',id).single().then(({data})=>{
+      if(data){document.getElementById('u-n').value=data.benutzername;document.getElementById('u-nm').value=data.name;document.getElementById('u-r').value=data.rolle;}
+    });
+  }
+  oM('mu');
 }
-async function saveUser(){
-  const un=document.getElementById('u-un').value.trim().toLowerCase(),nm=document.getElementById('u-nm').value.trim(),pw=document.getElementById('u-pw').value,ro=document.getElementById('u-ro').value;
-  if(!un||!nm){toast('Benutzername und Name erforderlich','er');return;}
+async function saveU(){
+  const un=document.getElementById('u-n').value.trim().toLowerCase();
+  const nm=document.getElementById('u-nm').value.trim();
+  const pw=document.getElementById('u-p').value;
+  const ro=document.getElementById('u-r').value;
+  if(!un||!nm){toast('Name und Benutzername erforderlich','er');return;}
   const pay={benutzername:un,name:nm,rolle:ro};
   if(pw){if(pw.length<6){toast('Passwort min. 6 Zeichen','er');return;}pay.passwort_hash=btoa(pw);}
-  if(eUsr){await db.from('benutzer').update(pay).eq('id',eUsr);toast('Benutzer aktualisiert','ok');}
-  else{if(!pw){toast('Passwort erforderlich','er');return;}await db.from('benutzer').insert({...pay,aktiv:true});toast('Benutzer erstellt','ok');}
-  closeModal('mod-user');loadUsers();
+  if(eU){
+    await db.from('benutzer').update(pay).eq('id',eU);
+    toast('Benutzer aktualisiert','ok');
+  } else {
+    if(!pw){toast('Passwort erforderlich','er');return;}
+    await db.from('benutzer').insert({...pay,aktiv:true});
+    toast('Benutzer erstellt','ok');
+  }
+  cM('mu');loadU();
 }
-async function deleteUser(){
-  if(!isAdmin()){toast('Nur Admin kann Benutzer löschen','er');return;}
-  if(!eUsr){toast('Kein Benutzer ausgewählt','er');return;}
-  if(eUsr===CU?.id){toast('Eigenen Account nicht löschbar','er');return;}
-  const choice=confirm('Benutzer permanent löschen?\nDies kann nicht rückgängig gemacht werden.');
-  if(!choice)return;
-  await db.from('benutzer').delete().eq('id',eUsr);
-  toast('Benutzer gelöscht','ok');closeModal('mod-user');loadUsers();
+async function delU(){
+  if(!eU){toast('Kein Benutzer ausgewählt','er');return;}
+  if(eU===CU?.id){toast('Eigenen Account nicht löschbar','er');return;}
+  if(!confirm('Benutzer wirklich löschen?\n\nDies kann nicht rückgängig gemacht werden.'))return;
+  await db.from('benutzer').delete().eq('id',eU);
+  toast('Benutzer gelöscht','ok');cM('mu');loadU();
 }
 
-// ── KATEGORIEN ADMIN ──
-async function loadKatAdminList(){
-  const el=document.getElementById('kat-admin-list');if(!el)return;
+// KATEGORIEN
+async function loadKL(){
+  const el=document.getElementById('klist');if(!el)return;
   const{data}=await db.from('kategorien').select('*').order('name');
-  el.innerHTML=(data||[]).map(k=>`<div class="u-item"><div class="u-n" style="display:flex;align-items:center;gap:8px;"><span style="width:13px;height:13px;border-radius:50%;background:${k.farbe};display:inline-block;flex-shrink:0;"></span><span style="margin-right:4px;">${k.icon||''}</span>${k.name}</div><button class="btn btn-g sm" onclick="openKatModal('${k.id}')">✎</button></div>`).join('');
+  if(!data?.length){el.innerHTML='<div style="color:var(--text3);font-size:13px;">Keine Kategorien.</div>';return;}
+  el.innerHTML=data.map(k=>`<div class="ui"><div class="uii"><div class="uin" style="display:flex;align-items:center;gap:8px;"><span style="width:14px;height:14px;border-radius:50%;background:${k.farbe};display:inline-block;flex-shrink:0;"></span>${k.name}</div></div><button class="btn bg2b sm" onclick="openKM('${k.id}')">✎</button></div>`).join('');
 }
-function openKatModal(id){
-  eKat=id||null;const k=id?KA.find(x=>x.id===id):null;
-  document.getElementById('mod-kat-t').textContent=k?'Kategorie bearbeiten':'Neue Kategorie';
-  document.getElementById('k-nm').value=k?.name||'';
-  document.getElementById('k-fc').value=k?.farbe||'#5b8def';
-  document.getElementById('k-ic').value=k?.icon||'';
-  katImgBase64=k?.bild||'';
-  const prev=document.getElementById('k-img-preview');
-  const thumb=document.getElementById('k-img-thumb');
-  if(k?.bild){thumb.src=k.bild;prev.style.display='flex';prev.style.alignItems='center';}
-  else{prev.style.display='none';}
-  document.getElementById('k-img').value='';
-  document.getElementById('btn-del-kat').style.display=k?'inline-flex':'none';
-  openModal('mod-kat');
+function openKM(id){
+  eK=id||null;
+  const k=id?KA.find(x=>x.id===id):null;
+  document.getElementById('mkt').textContent=k?'Kategorie bearbeiten':'Neue Kategorie';
+  document.getElementById('k-n').value=k?.name||'';
+  document.getElementById('k-f').value=k?.farbe||'#5b8def';
+  document.getElementById('bdlk').style.display=k?'inline-flex':'none';
+  oM('mk');
 }
-async function saveKat(){
-  if(!canEdit()){toast('Keine Berechtigung','er');return;}
-  const nm=document.getElementById('k-nm').value.trim();if(!nm){toast('Name erforderlich','er');return;}
-  const fc=document.getElementById('k-fc').value,ic=document.getElementById('k-ic').value;
-  const bild=katImgBase64||null;
-  const pay={name:nm,farbe:fc,icon:ic};
-  if(bild!==null)pay.bild=bild;
-  if(eKat){await db.from('kategorien').update(pay).eq('id',eKat);toast('Kategorie aktualisiert','ok');}
-  else{await db.from('kategorien').insert(pay);toast('Kategorie erstellt','ok');}
-  katImgBase64='';
-  closeModal('mod-kat');await loadKA();
-  if(isAdmin())loadKatAdminList();
-  loadKatPageList();
-  renderKatGrid();
+async function saveK(){
+  const nm=document.getElementById('k-n').value.trim();
+  if(!nm){toast('Name erforderlich','er');return;}
+  const fc=document.getElementById('k-f').value;
+  if(eK){await db.from('kategorien').update({name:nm,farbe:fc}).eq('id',eK);toast('Kategorie aktualisiert','ok');}
+  else{await db.from('kategorien').insert({name:nm,farbe:fc});toast('Kategorie erstellt','ok');}
+  cM('mk');await loadKA();loadKL();
 }
-async function deleteKat(){
-  if(!eKat||!confirm('Kategorie löschen?'))return;
-  await db.from('kategorien').delete().eq('id',eKat);
-  toast('Gelöscht');closeModal('mod-kat');await loadKA();if(isAdmin())loadKatAdminList();renderKatGrid();
+async function delK(){
+  if(!eK){toast('Keine Kategorie ausgewählt','er');return;}
+  if(!confirm('Kategorie löschen?\nArtikel in dieser Kategorie behalten ihre Daten.'))return;
+  await db.from('kategorien').delete().eq('id',eK);
+  toast('Kategorie gelöscht','ok');cM('mk');await loadKA();loadKL();
 }
 
-// ── KATEGORIE PAGE LIST ──
-async function loadKatPageList(){
-  const el=document.getElementById('kat-page-list');if(!el)return;
-  const{data}=await db.from('kategorien').select('*').order('name');
-  if(!(data&&data.length)){el.innerHTML='<div style="color:var(--text3);font-size:13px;padding:8px 0;">Noch keine Kategorien.</div>';return;}
-  el.innerHTML=data.map(k=>{
-    const img=k.bild?`<img src="${k.bild}" style="width:44px;height:44px;object-fit:cover;border-radius:8px;margin-right:10px;flex-shrink:0;" />`:`<span style="width:44px;height:44px;border-radius:8px;background:${k.farbe}22;display:inline-flex;align-items:center;justify-content:center;font-size:22px;margin-right:10px;flex-shrink:0;">${k.icon||'📁'}</span>`;
-    return`<div class="u-item" style="gap:0;">
-      <div style="display:flex;align-items:center;flex:1;">${img}<div><div class="u-n">${k.name}</div><div class="u-m">${LA.filter(a=>a.kategorie_id===k.id).length} Artikel</div></div></div>
-      <button class="btn btn-g sm" onclick="openKatModal('${k.id}')">✎</button>
-    </div>`;
-  }).join('');
-}
-
-// ── IMAGE HELPERS ──
-let katImgBase64='';let artImgBase64='';
-
-function previewKatImg(input){
-  const file=input.files[0];if(!file)return;
-  const r=new FileReader();
-  r.onload=e=>{katImgBase64=e.target.result;document.getElementById('k-img-thumb').src=katImgBase64;document.getElementById('k-img-preview').style.display='flex';document.getElementById('k-img-preview').style.alignItems='center';};
-  r.readAsDataURL(file);
-}
-function clearKatImg(){katImgBase64='';document.getElementById('k-img-preview').style.display='none';document.getElementById('k-img').value='';}
-
-function previewArtImg(input){
-  const file=input.files[0];if(!file)return;
-  const r=new FileReader();
-  r.onload=e=>{artImgBase64=e.target.result;document.getElementById('a-img-thumb').src=artImgBase64;document.getElementById('a-img-preview').style.display='flex';document.getElementById('a-img-preview').style.alignItems='center';};
-  r.readAsDataURL(file);
-}
-function clearArtImg(){artImgBase64='';document.getElementById('a-img-preview').style.display='none';document.getElementById('a-img').value='';}
-
-// ── RESET ──
+// RESET
 function resetR(silent){
   if(!silent&&!confirm('Rapport zurücksetzen?'))return;
-  editRapId=null;
-  document.getElementById('rap-page-title').textContent='Neuer Servicerapport';
-  document.getElementById('btn-rap-cancel-edit').classList.add('hidden');
   document.getElementById('r-dat').value=new Date().toISOString().split('T')[0];
   ['r-prj','r-knd','r-adr','r-mai','r-tel','r-not'].forEach(id=>document.getElementById(id).value='');
-  document.getElementById('mat-tbody').innerHTML='';
+  document.getElementById('mtb').innerHTML='';
   MA.forEach(m=>{const e=document.getElementById('aw-'+m.id);if(e)e.value='';});
-  // Reset FZ/HM selections
-  FZ.forEach(f=>{fzSelected[f.id]=false;const row=document.getElementById('row-'+f.id);if(row)row.classList.remove('selected');const h=document.getElementById(f.id+'-h');if(h)h.value='';});
-  HM.forEach(h=>{hmSelected[h.id]=false;const row=document.getElementById('row-'+h.id);if(row)row.classList.remove('selected');});
+  resetFZ();
   document.querySelectorAll('.rb').forEach(b=>b.classList.remove('on'));
   document.querySelector('.rb:nth-child(2)')?.classList.add('on');
-  AT='Auftrag Abgeschlossen';clrSig('sig-k');clrSig('sig-t');updTot();
-  if(!silent)toast('Rapport zurückgesetzt');
+  AT='Auftrag Abgeschlossen';
+  clrSig('sk');clrSig('st');
+  updT();
+  if(!silent)toast('Zurückgesetzt');
 }
 </script>
 </body>
