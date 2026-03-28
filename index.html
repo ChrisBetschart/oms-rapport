@@ -214,6 +214,37 @@ hr{border:none;border-top:1px solid var(--border);margin:16px 0;}
   .awa{display:none;}
 }
 @media(max-width:400px){.stats{grid-template-columns:1fr;}.ntl{display:none;}}
+
+/* RMA MODUL */
+.brd{background:rgba(224,92,74,.15);color:var(--red);}
+.bor{background:rgba(232,160,74,.15);color:var(--orange);}
+.bgy{background:rgba(120,120,120,.12);color:var(--text2);}
+.rbb{padding:10px 16px;border-radius:var(--rsm);border:1px solid var(--border2);font-size:14px;cursor:pointer;color:var(--text2);transition:all .15s;user-select:none;}
+.rbb.on{border-color:var(--accent2);color:var(--accent);background:rgba(200,184,154,.08);}
+.fbar{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;}
+.fb{padding:6px 14px;border-radius:20px;border:1px solid var(--border2);font-size:12px;font-weight:500;color:var(--text3);background:transparent;cursor:pointer;transition:all .15s;}
+.fb.on{background:rgba(200,184,154,.1);border-color:var(--accent2);color:var(--accent);}
+.rma-card{background:var(--bg3);border:1px solid var(--border);border-radius:var(--rsm);padding:14px 16px;margin-bottom:8px;transition:border-color .15s;}
+.rma-card:hover{border-color:var(--border2);}
+.rma-card.warn14{border-left:3px solid var(--orange);}
+.rma-card.warn30{border-left:3px solid var(--red);}
+.rma-row{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;}
+.rma-title{font-size:14px;font-weight:500;color:var(--text);margin-bottom:2px;}
+.rma-sub{font-size:12px;color:var(--text3);}
+.rma-foot{display:flex;align-items:center;justify-content:space-between;margin-top:10px;flex-wrap:wrap;gap:6px;}
+.rma-badges{display:flex;gap:5px;flex-wrap:wrap;}
+.rma-age{font-size:11px;font-family:'DM Mono',monospace;color:var(--text3);}
+.rma-age.warn{color:var(--orange);}
+.rma-age.crit{color:var(--red);}
+.vl{border-left:2px solid var(--border);padding-left:14px;margin-left:6px;}
+.vl-item{position:relative;padding-bottom:14px;}
+.vl-item:last-child{padding-bottom:0;}
+.vl-dot{position:absolute;left:-19px;top:4px;width:8px;height:8px;border-radius:50%;background:var(--border2);}
+.vl-ts{font-size:11px;color:var(--text3);font-family:'DM Mono',monospace;margin-bottom:2px;}
+.vl-txt{font-size:13px;color:var(--text);}
+.dl{display:grid;grid-template-columns:1fr 1fr;gap:8px 16px;margin-bottom:14px;}
+.dk{font-size:11px;color:var(--text3);margin-bottom:1px;}
+.dv{font-size:14px;color:var(--text);}
 </style>
 </head>
 <body>
@@ -250,6 +281,7 @@ hr{border:none;border-top:1px solid var(--border);margin:16px 0;}
     <button class="tbtn" onclick="showTab('lager','t-lag')" id="t-lag">Lager</button>
     <button class="tbtn" onclick="showTab('archiv','t-arc')" id="t-arc">Archiv</button>
     <button class="tbtn hidden" onclick="showTab('admin','t-adm')" id="t-adm">Admin</button>
+    <button class="tbtn" onclick="showTab('reparatur','t-rep')" id="t-rep">Reparaturen</button>
   </div>
 
   <!-- RAPPORT -->
@@ -362,6 +394,31 @@ hr{border:none;border-top:1px solid var(--border);margin:16px 0;}
       <div id="klist"></div>
     </div>
   </div>
+
+  <!-- REPARATUREN / RMA -->
+  <div class="pg" id="page-reparatur">
+    <div class="sh">
+      <div><div class="st">Reparaturen &amp; RMA</div><div class="ss">Defekte Geräte, interne Reparaturen und eingeschicktes Material.</div></div>
+      <div class="brow"><button class="btn bp sm" onclick="openRF()">+ Neuer Fall</button></div>
+    </div>
+    <div class="stats">
+      <div class="sc2"><div class="slbl">Intern offen</div><div class="sval" id="rma-s1">—</div></div>
+      <div class="sc2"><div class="slbl">Extern / Lieferant</div><div class="sval" id="rma-s2">—</div></div>
+      <div class="sc2"><div class="slbl">Dringend</div><div class="sval" id="rma-s3" style="color:var(--orange);">—</div></div>
+    </div>
+    <div class="card">
+      <div class="fbar">
+        <button class="fb on" onclick="setRFil(this,'')">Alle offen</button>
+        <button class="fb" onclick="setRFil(this,'intern')">Intern</button>
+        <button class="fb" onclick="setRFil(this,'extern')">Extern</button>
+        <button class="fb" onclick="setRFil(this,'dringend')">Dringend</button>
+        <button class="fb" onclick="setRFil(this,'warn')">› 14 Tage</button>
+        <button class="fb" onclick="setRFil(this,'abgeschlossen')">Abgeschlossen</button>
+      </div>
+      <div class="sw2"><span class="sic">⌕</span><input type="text" id="rma-src" placeholder="Suchen..." oninput="rRMA()"></div>
+      <div id="rma-list"><div style="color:var(--text3);font-size:13px;">Wird geladen...</div></div>
+    </div>
+  </div>
 </div>
 
 <!-- MODAL: Lager wählen -->
@@ -444,6 +501,73 @@ hr{border:none;border-top:1px solid var(--border);margin:16px 0;}
   </div>
 </div>
 
+<!-- MODAL: RMA Fall erstellen / bearbeiten -->
+<div class="mb" id="mrf">
+  <div class="modal" style="max-width:600px;">
+    <div class="mt" id="mrf-t">Neuer Reparaturfall</div>
+    <div class="fg" style="margin-bottom:16px;">
+      <div class="fi s2"><label>Bezeichnung / Titel *</label><input type="text" id="rf-ti" placeholder="z.B. Monitor defekt – Kunde XY"></div>
+      <div class="fi">
+        <label>Typ</label>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <div class="rbb on" id="rf-typ-i" onclick="setRFTyp('intern')">Intern</div>
+          <div class="rbb" id="rf-typ-e" onclick="setRFTyp('extern')">Extern / RMA</div>
+        </div>
+      </div>
+      <div class="fi">
+        <label>Priorität</label>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <div class="rbb on" id="rf-pri-n" onclick="setRFPri('normal')">Normal</div>
+          <div class="rbb" id="rf-pri-d" onclick="setRFPri('dringend')">⚡ Dringend</div>
+        </div>
+      </div>
+      <div class="fi"><label>Status</label><select id="rf-st"></select></div>
+      <div class="fi"><label>Zuständig</label><select id="rf-zu"><option value="">— Nicht zugewiesen —</option></select></div>
+      <div class="fi s2"><label>Fehlerbeschreibung</label><textarea id="rf-fb" placeholder="Was ist genau das Problem?" style="min-height:70px;"></textarea></div>
+      <div class="fi"><label>Gerät / Artikel</label><input type="text" id="rf-gr" placeholder="z.B. Samsung Monitor 27&quot;"></div>
+      <div class="fi"><label>Marke</label><input type="text" id="rf-mk" placeholder="Samsung"></div>
+      <div class="fi"><label>Artikelnummer</label><input type="text" id="rf-an"></div>
+      <div class="fi"><label>Seriennummer</label><input type="text" id="rf-sn"></div>
+      <div class="fi"><label>Garantie</label>
+        <select id="rf-ga"><option value="unbekannt">Unbekannt</option><option value="ja">Ja (unter Garantie)</option><option value="nein">Nein</option></select>
+      </div>
+      <div class="fi"><label>Datum Defekt</label><input type="date" id="rf-dd"></div>
+      <div class="fi"><label>Kunde</label><input type="text" id="rf-ku" placeholder="Firma oder Name"></div>
+      <div class="fi"><label>Projektnummer</label><input type="text" id="rf-pj" placeholder="z.B. 2026-042"></div>
+      <div class="fi s2"><label>Bemerkung (intern)</label><textarea id="rf-bm" placeholder="Interne Notiz..." style="min-height:55px;"></textarea></div>
+      <div class="fi s2" id="rf-ext-sep" style="display:none;"><hr style="margin:2px 0;"><span style="font-size:11px;text-transform:uppercase;letter-spacing:.6px;color:var(--text3);font-weight:500;">Externe RMA</span></div>
+      <div class="fi" id="rf-li-w" style="display:none;"><label>Lieferant / Hersteller</label><input type="text" id="rf-li" placeholder="z.B. Samsung AG"></div>
+      <div class="fi" id="rf-rn-w" style="display:none;"><label>RMA-Nummer</label><input type="text" id="rf-rn"></div>
+      <div class="fi" id="rf-de-w" style="display:none;"><label>Datum eingeschickt</label><input type="date" id="rf-de"></div>
+      <div class="fi" id="rf-rd-w" style="display:none;"><label>Rückdatum erwartet</label><input type="date" id="rf-rd"></div>
+      <div class="fi" id="rf-tr-w" style="display:none;"><label>Trackingnummer</label><input type="text" id="rf-tr"></div>
+      <div class="fi" id="rf-ra-w" style="display:none;"><label>Rücksendungsart</label>
+        <select id="rf-ra"><option value="offen">Noch offen</option><option value="reparatur">Reparatur</option><option value="austausch">Austausch / Ersatz</option><option value="gutschrift">Gutschrift</option></select>
+      </div>
+      <div class="fi" id="rf-rk-w" style="display:none;"><label>Reparaturkosten (CHF)</label><input type="number" id="rf-rk" step="0.01" placeholder="0.00"></div>
+      <div class="fi" id="rf-tk-w" style="display:none;"><label>Transportkosten (CHF)</label><input type="number" id="rf-tk" step="0.01" placeholder="0.00"></div>
+      <div class="fi s2"><label>Bemerkung zum Verlauf (optional)</label><input type="text" id="rf-vb" placeholder="z.B. RMA-Nummer erhalten – wird im Verlauf protokolliert"></div>
+    </div>
+    <div class="brow">
+      <button class="btn bp" onclick="saveRF()">Speichern</button>
+      <button class="btn bg2b" onclick="cM('mrf')">Abbrechen</button>
+      <button class="btn bd" id="bdlrf" style="margin-left:auto;display:none;" onclick="delRF()">Löschen</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: RMA Fall Detail & Verlauf -->
+<div class="mb" id="mrfd">
+  <div class="modal" style="max-width:620px;">
+    <div class="mt">Falldetail &amp; Verlauf</div>
+    <div id="mrfd-c"></div>
+    <div class="brow" style="margin-top:16px;">
+      <button class="btn bg2b" onclick="cM('mrfd')">Schliessen</button>
+      <button class="btn bp" id="mrfd-edit">Bearbeiten</button>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
@@ -516,6 +640,7 @@ function showTab(p,b){
   if(p==='lager'){rlager();rStats();}
   if(p==='archiv')loadArc();
   if(p==='admin'){loadU();loadKL();}
+  if(p==='reparatur')loadRMA();
 }
 
 // TOAST / MODAL
@@ -944,6 +1069,255 @@ async function delK(){
   if(!confirm('Kategorie löschen?\nArtikel in dieser Kategorie behalten ihre Daten.'))return;
   await db.from('kategorien').delete().eq('id',eK);
   toast('Kategorie gelöscht','ok');cM('mk');await loadKA();loadKL();
+}
+
+// RMA / REPARATUREN
+let RMAF=[],eRF=null,rmaFil='',rfTyp_='intern',rfPri_='normal',rfOldSt_='';
+const RMA_ST_INT=[
+  ['defekt_gemeldet','Defekt gemeldet'],['intern_offen','Intern offen'],['in_pruefung','In Prüfung'],
+  ['repariert','Repariert'],['nicht_reparierbar','Nicht reparierbar'],['abgeschlossen','Abgeschlossen']
+];
+const RMA_ST_EXT=[
+  ['defekt_gemeldet','Defekt gemeldet'],['rma_beantragt','RMA beantragt'],['eingeschickt','Eingeschickt'],
+  ['beim_lieferanten','Beim Lieferanten'],['rueckfrage_offen','Rückfrage offen'],
+  ['repariert_zurueck','Repariert zurück'],['austausch_erhalten','Austausch erhalten'],
+  ['gutschrift_erhalten','Gutschrift erhalten'],['nicht_reparierbar','Nicht reparierbar'],['abgeschlossen','Abgeschlossen']
+];
+function rmaStatusLabel(s){return[...RMA_ST_INT,...RMA_ST_EXT].find(x=>x[0]===s)?.[1]||s;}
+function rmaStatusClass(s){
+  if(['repariert','repariert_zurueck','austausch_erhalten','gutschrift_erhalten'].includes(s))return 'bgr';
+  if(s==='abgeschlossen')return 'bgy';
+  if(['nicht_reparierbar','rueckfrage_offen'].includes(s))return 'brd';
+  if(['defekt_gemeldet','rma_beantragt'].includes(s))return 'bor';
+  return 'bbl';
+}
+function rmaAge(d){if(!d)return 0;return Math.floor((Date.now()-new Date(d).getTime())/864e5);}
+function rmaAgeClass(days){if(days>30)return 'crit';if(days>14)return 'warn';return '';}
+
+async function loadRMA(){
+  const{data}=await db.from('rma_faelle').select('*').order('erstellt_am',{ascending:false});
+  RMAF=data||[];rRMA();rRMAStats();
+}
+function rRMAStats(){
+  const o=RMAF.filter(f=>!f.abgeschlossen);
+  const e1=document.getElementById('rma-s1'),e2=document.getElementById('rma-s2'),e3=document.getElementById('rma-s3');
+  if(e1)e1.textContent=o.filter(f=>f.typ==='intern').length;
+  if(e2)e2.textContent=o.filter(f=>f.typ==='extern').length;
+  if(e3)e3.textContent=o.filter(f=>f.prioritaet==='dringend').length;
+}
+function setRFil(btn,val){
+  document.querySelectorAll('.fb').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');rmaFil=val;rRMA();
+}
+function rRMA(){
+  const q=(document.getElementById('rma-src')?.value||'').toLowerCase();
+  let f=RMAF;
+  if(rmaFil==='abgeschlossen'){f=f.filter(x=>x.abgeschlossen);}
+  else{
+    f=f.filter(x=>!x.abgeschlossen);
+    if(rmaFil==='intern')f=f.filter(x=>x.typ==='intern');
+    else if(rmaFil==='extern')f=f.filter(x=>x.typ==='extern');
+    else if(rmaFil==='dringend')f=f.filter(x=>x.prioritaet==='dringend');
+    else if(rmaFil==='warn')f=f.filter(x=>rmaAge(x.erstellt_am)>14);
+  }
+  if(q)f=f.filter(x=>['titel','geraet','kunde','rma_nummer','lieferant','projektnummer','seriennummer'].some(k=>(x[k]||'').toLowerCase().includes(q)));
+  const el=document.getElementById('rma-list');if(!el)return;
+  if(!f.length){el.innerHTML='<div style="color:var(--text3);font-size:13px;padding:8px 0;">Keine Fälle gefunden.</div>';return;}
+  el.innerHTML=f.map(x=>{
+    const age=rmaAge(x.erstellt_am),ac=rmaAgeClass(age);
+    const cls='rma-card'+(ac==='crit'?' warn30':ac==='warn'?' warn14':'');
+    const ageTxt=x.abgeschlossen?'Abgeschlossen':`${age} Tag${age===1?'':'e'} offen`;
+    const sub=[x.geraet,x.marke,x.seriennummer?'SN: '+x.seriennummer:''].filter(Boolean).join(' · ')||'Kein Gerät angegeben';
+    return`<div class="${cls}">
+      <div class="rma-row">
+        <div style="flex:1;min-width:0;"><div class="rma-title">${x.titel}</div><div class="rma-sub">${sub}</div></div>
+        <button class="btn bg2b sm" style="flex-shrink:0;" onclick="openRFD('${x.id}')">Detail</button>
+      </div>
+      <div class="rma-foot">
+        <div class="rma-badges">
+          <span class="bdg ${x.typ==='extern'?'bbl':'bpu'}">${x.typ==='extern'?'Extern':'Intern'}</span>
+          <span class="bdg ${rmaStatusClass(x.status)}">${rmaStatusLabel(x.status)}</span>
+          ${x.prioritaet==='dringend'?'<span class="bdg bor">Dringend</span>':''}
+          ${x.garantie==='ja'?'<span class="bdg bgr">Garantie</span>':''}
+          ${x.kunde?`<span class="bdg bgy">${x.kunde}</span>`:''}
+        </div>
+        <span class="rma-age ${ac}">${ageTxt}</span>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function openRF(id){
+  eRF=id||null;rfOldSt_='';
+  const f=id?RMAF.find(x=>x.id===id):null;
+  document.getElementById('mrf-t').textContent=f?'Fall bearbeiten':'Neuer Reparaturfall';
+  document.getElementById('bdlrf').style.display=f&&isAdm()?'inline-flex':'none';
+  ['rf-ti','rf-fb','rf-gr','rf-mk','rf-an','rf-sn','rf-ku','rf-pj','rf-bm','rf-li','rf-rn','rf-tr','rf-vb'].forEach(id2=>document.getElementById(id2).value=f?.(id2.replace('rf-','').replace(/-/g,'_'))||'');
+  document.getElementById('rf-ti').value=f?.titel||'';
+  document.getElementById('rf-fb').value=f?.fehlerbeschreibung||'';
+  document.getElementById('rf-gr').value=f?.geraet||'';
+  document.getElementById('rf-mk').value=f?.marke||'';
+  document.getElementById('rf-an').value=f?.artikelnummer||'';
+  document.getElementById('rf-sn').value=f?.seriennummer||'';
+  document.getElementById('rf-ku').value=f?.kunde||'';
+  document.getElementById('rf-pj').value=f?.projektnummer||'';
+  document.getElementById('rf-bm').value=f?.bemerkung||'';
+  document.getElementById('rf-li').value=f?.lieferant||'';
+  document.getElementById('rf-rn').value=f?.rma_nummer||'';
+  document.getElementById('rf-tr').value=f?.versand_tracking||'';
+  document.getElementById('rf-vb').value='';
+  document.getElementById('rf-ga').value=f?.garantie||'unbekannt';
+  document.getElementById('rf-dd').value=f?.datum_defekt||'';
+  document.getElementById('rf-de').value=f?.datum_eingeschickt||'';
+  document.getElementById('rf-rd').value=f?.datum_zurueck_erwartet||'';
+  document.getElementById('rf-ra').value=f?.ruecksendungsart||'offen';
+  document.getElementById('rf-rk').value=f?.reparaturkosten||'';
+  document.getElementById('rf-tk').value=f?.transportkosten||'';
+  rfTyp_=f?.typ||'intern';
+  document.getElementById('rf-typ-i').classList.toggle('on',rfTyp_==='intern');
+  document.getElementById('rf-typ-e').classList.toggle('on',rfTyp_==='extern');
+  rfPri_=f?.prioritaet||'normal';
+  document.getElementById('rf-pri-n').classList.toggle('on',rfPri_==='normal');
+  document.getElementById('rf-pri-d').classList.toggle('on',rfPri_==='dringend');
+  updateRFExt();
+  updateRFStatus(f?.status);
+  if(f)rfOldSt_=f.status;
+  const zu=document.getElementById('rf-zu');
+  zu.innerHTML='<option value="">— Nicht zugewiesen —</option>'+MA.map(m=>`<option value="${m.name}">${m.name}</option>`).join('');
+  zu.value=f?.zustaendig||'';
+  oM('mrf');
+}
+function setRFTyp(typ){
+  rfTyp_=typ;
+  document.getElementById('rf-typ-i').classList.toggle('on',typ==='intern');
+  document.getElementById('rf-typ-e').classList.toggle('on',typ==='extern');
+  updateRFExt();updateRFStatus();
+}
+function setRFPri(pri){
+  rfPri_=pri;
+  document.getElementById('rf-pri-n').classList.toggle('on',pri==='normal');
+  document.getElementById('rf-pri-d').classList.toggle('on',pri==='dringend');
+}
+function updateRFExt(){
+  const show=rfTyp_==='extern';
+  ['rf-ext-sep','rf-li-w','rf-rn-w','rf-de-w','rf-rd-w','rf-tr-w','rf-ra-w','rf-rk-w','rf-tk-w'].forEach(id=>{
+    const el=document.getElementById(id);if(el)el.style.display=show?'':'none';
+  });
+}
+function updateRFStatus(cur){
+  const opts=rfTyp_==='extern'?RMA_ST_EXT:RMA_ST_INT;
+  const sel=document.getElementById('rf-st');
+  sel.innerHTML=opts.map(([v,l])=>`<option value="${v}">${l}</option>`).join('');
+  if(cur&&opts.find(x=>x[0]===cur))sel.value=cur;
+}
+async function saveRF(){
+  const ti=document.getElementById('rf-ti').value.trim();
+  if(!ti){toast('Bezeichnung / Titel fehlt','er');return;}
+  const newSt=document.getElementById('rf-st').value;
+  const isAbs=newSt==='abgeschlossen';
+  const pay={
+    titel:ti,typ:rfTyp_,prioritaet:rfPri_,status:newSt,
+    fehlerbeschreibung:document.getElementById('rf-fb').value||null,
+    geraet:document.getElementById('rf-gr').value||null,
+    marke:document.getElementById('rf-mk').value||null,
+    artikelnummer:document.getElementById('rf-an').value||null,
+    seriennummer:document.getElementById('rf-sn').value||null,
+    garantie:document.getElementById('rf-ga').value,
+    datum_defekt:document.getElementById('rf-dd').value||null,
+    kunde:document.getElementById('rf-ku').value||null,
+    projektnummer:document.getElementById('rf-pj').value||null,
+    zustaendig:document.getElementById('rf-zu').value||null,
+    bemerkung:document.getElementById('rf-bm').value||null,
+    lieferant:rfTyp_==='extern'?(document.getElementById('rf-li').value||null):null,
+    rma_nummer:rfTyp_==='extern'?(document.getElementById('rf-rn').value||null):null,
+    datum_eingeschickt:rfTyp_==='extern'?(document.getElementById('rf-de').value||null):null,
+    datum_zurueck_erwartet:rfTyp_==='extern'?(document.getElementById('rf-rd').value||null):null,
+    versand_tracking:rfTyp_==='extern'?(document.getElementById('rf-tr').value||null):null,
+    ruecksendungsart:rfTyp_==='extern'?(document.getElementById('rf-ra').value||null):null,
+    reparaturkosten:rfTyp_==='extern'?(parseFloat(document.getElementById('rf-rk').value)||null):null,
+    transportkosten:rfTyp_==='extern'?(parseFloat(document.getElementById('rf-tk').value)||null):null,
+    abgeschlossen:isAbs,abgeschlossen_am:isAbs?new Date().toISOString():null,
+    geaendert_am:new Date().toISOString(),geaendert_von:CU?.name||''
+  };
+  let fallId=eRF;
+  if(eRF){
+    await db.from('rma_faelle').update(pay).eq('id',eRF);toast('Fall aktualisiert','ok');
+  } else {
+    pay.erstellt_am=new Date().toISOString();pay.erstellt_von=CU?.name||'';
+    const{data,error}=await db.from('rma_faelle').insert(pay).select().single();
+    if(error){toast('Fehler beim Speichern','er');console.error(error);return;}
+    fallId=data.id;toast('Fall erstellt','ok');
+  }
+  const vbem=document.getElementById('rf-vb').value.trim();
+  const stChanged=eRF&&rfOldSt_&&rfOldSt_!==newSt;
+  if(!eRF||stChanged||vbem){
+    await db.from('rma_verlauf').insert({
+      fall_id:fallId,zeitstempel:new Date().toISOString(),benutzer_name:CU?.name||'',
+      alter_status:stChanged?rfOldSt_:null,
+      neuer_status:stChanged?newSt:(!eRF?newSt:null),
+      bemerkung:vbem||null
+    });
+  }
+  cM('mrf');await loadRMA();
+}
+async function delRF(){
+  if(!isAdm()){toast('Nur Administratoren dürfen Fälle löschen','er');return;}
+  if(!eRF||!confirm('Fall wirklich löschen?\n\nDer gesamte Verlauf wird ebenfalls gelöscht.'))return;
+  await db.from('rma_faelle').delete().eq('id',eRF);
+  toast('Fall gelöscht','ok');cM('mrf');await loadRMA();
+}
+async function openRFD(id){
+  const f=RMAF.find(x=>x.id===id);if(!f)return;
+  const{data:vl}=await db.from('rma_verlauf').select('*').eq('fall_id',id).order('zeitstempel',{ascending:false});
+  const age=rmaAge(f.erstellt_am),ac=rmaAgeClass(age);
+  const ageTxt=f.abgeschlossen?'Abgeschlossen':`${age} Tag${age===1?'':'e'} offen`;
+  const row=(label,value)=>value?`<div><div class="dk">${label}</div><div class="dv">${value}</div></div>`:'';
+  let h=`<div style="margin-bottom:14px;">
+    <div style="font-size:17px;font-weight:500;margin-bottom:8px;">${f.titel}</div>
+    <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;">
+      <span class="bdg ${f.typ==='extern'?'bbl':'bpu'}">${f.typ==='extern'?'Extern':'Intern'}</span>
+      <span class="bdg ${rmaStatusClass(f.status)}">${rmaStatusLabel(f.status)}</span>
+      ${f.prioritaet==='dringend'?'<span class="bdg bor">Dringend</span>':''}
+      ${f.garantie==='ja'?'<span class="bdg bgr">Garantie</span>':''}
+      <span class="rma-age ${ac}" style="margin-left:4px;">${ageTxt}</span>
+    </div>
+  </div>`;
+  if(f.fehlerbeschreibung)h+=`<div style="margin-bottom:14px;background:var(--bg3);border-radius:var(--rsm);padding:12px;font-size:14px;color:var(--text2);">${f.fehlerbeschreibung}</div>`;
+  h+=`<div class="dl">
+    ${row('Gerät / Artikel',f.geraet)}${row('Marke',f.marke)}
+    ${row('Artikelnummer',f.artikelnummer)}${row('Seriennummer',f.seriennummer)}
+    ${row('Garantie',{ja:'Ja (unter Garantie)',nein:'Nein',unbekannt:'Unbekannt'}[f.garantie]||'')}${row('Datum Defekt',f.datum_defekt)}
+    ${row('Kunde',f.kunde)}${row('Projektnummer',f.projektnummer)}
+    ${row('Zuständig',f.zustaendig)}${row('Erfasst von',f.erstellt_von)}
+    ${row('Erfasst am',f.erstellt_am?new Date(f.erstellt_am).toLocaleDateString('de-CH'):'')}${row('','')}
+  </div>`;
+  if(f.typ==='extern'){
+    h+=`<hr style="margin:12px 0;"><div style="font-size:11px;text-transform:uppercase;letter-spacing:.6px;color:var(--text3);font-weight:500;margin-bottom:10px;">Externe RMA</div>
+    <div class="dl">
+      ${row('Lieferant / Hersteller',f.lieferant)}${row('RMA-Nummer',f.rma_nummer)}
+      ${row('Datum eingeschickt',f.datum_eingeschickt)}${row('Rückdatum erwartet',f.datum_zurueck_erwartet)}
+      ${row('Trackingnummer',f.versand_tracking)}${row('Rücksendungsart',{reparatur:'Reparatur',austausch:'Austausch / Ersatz',gutschrift:'Gutschrift',offen:'Noch offen'}[f.ruecksendungsart]||'')}
+      ${row('Reparaturkosten',f.reparaturkosten?'CHF '+Number(f.reparaturkosten).toFixed(2):'')}${row('Transportkosten',f.transportkosten?'CHF '+Number(f.transportkosten).toFixed(2):'')}
+    </div>`;
+  }
+  if(f.bemerkung)h+=`<div style="margin-bottom:12px;"><div class="dk">Bemerkung</div><div class="dv">${f.bemerkung}</div></div>`;
+  const vlArr=vl||[];
+  h+=`<hr style="margin:14px 0;"><div style="font-size:11px;text-transform:uppercase;letter-spacing:.6px;color:var(--text3);font-weight:500;margin-bottom:12px;">Verlauf (${vlArr.length})</div>`;
+  if(vlArr.length){
+    h+=`<div class="vl">${vlArr.map(v=>{
+      const ts=new Date(v.zeitstempel).toLocaleString('de-CH',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});
+      let txt='';
+      if(v.alter_status&&v.neuer_status)txt+=`<strong>${rmaStatusLabel(v.alter_status)}</strong> → <strong>${rmaStatusLabel(v.neuer_status)}</strong>`;
+      else if(!v.alter_status&&v.neuer_status)txt+=`Fall erfasst mit Status <strong>${rmaStatusLabel(v.neuer_status)}</strong>`;
+      if(v.bemerkung)txt+=(txt?'<br>':'')+`<span style="color:var(--text2);">${v.bemerkung}</span>`;
+      return`<div class="vl-item"><div class="vl-dot"></div><div class="vl-ts">${ts} — ${v.benutzer_name||'Unbekannt'}</div><div class="vl-txt">${txt||'Eintrag'}</div></div>`;
+    }).join('')}</div>`;
+  } else {
+    h+=`<div style="color:var(--text3);font-size:13px;">Kein Verlauf vorhanden.</div>`;
+  }
+  document.getElementById('mrfd-c').innerHTML=h;
+  document.getElementById('mrfd-edit').onclick=()=>{cM('mrfd');openRF(id);};
+  oM('mrfd');
 }
 
 // RESET
