@@ -409,6 +409,10 @@ hr{border:none;border-top:1px solid var(--border);margin:16px 0;}
       <div class="ch"><span class="ct" style="margin:0;">Kategorien</span><button class="btn bp sm" onclick="openKM()">+ Kategorie</button></div>
       <div id="klist"></div>
     </div>
+    <div class="card" style="margin-top:16px;">
+      <div class="ch"><span class="ct" style="margin:0;">Wareneingang-Vorlagen</span></div>
+      <div id="vlist"><div style="color:var(--text3);font-size:13px;">Wird geladen...</div></div>
+    </div>
   </div>
 
   <!-- WARENEINGANG -->
@@ -541,6 +545,28 @@ hr{border:none;border-top:1px solid var(--border);margin:16px 0;}
   </div>
 </div>
 
+<!-- MODAL: WE Projektvorlage laden -->
+<div class="mb" id="mwev">
+  <div class="modal">
+    <div class="mt">Projektvorlage laden</div>
+    <div id="wev-list" style="max-height:50vh;overflow-y:auto;"></div>
+    <div style="margin-top:14px;text-align:right;"><button class="btn bg2b" onclick="cM('mwev')">Schliessen</button></div>
+  </div>
+</div>
+
+<!-- MODAL: WE Excel/CSV Import -->
+<div class="mb" id="mwec">
+  <div class="modal">
+    <div class="mt">Aus Excel importieren</div>
+    <div style="font-size:13px;color:var(--text2);margin-bottom:12px;">Spalten aus Excel kopieren und hier einfügen:<br><span style="font-family:'DM Mono',monospace;font-size:11px;color:var(--text3);">Bezeichnung | Artikelnr. | Menge | Einheit</span></div>
+    <textarea id="wec-txt" placeholder="HDMI Kabel 2m&#9;HDMI-2M&#9;5&#9;Stk&#10;Wandhalterung 75&quot;&#9;WH-75&#9;2&#9;Stk" style="min-height:140px;font-family:'DM Mono',monospace;font-size:13px;"></textarea>
+    <div class="brow" style="margin-top:12px;">
+      <button class="btn bp" onclick="importWECSV()">Importieren</button>
+      <button class="btn bg2b" onclick="cM('mwec')">Abbrechen</button>
+    </div>
+  </div>
+</div>
+
 <!-- MODAL: Wareneingang erfassen / bearbeiten -->
 <div class="mb" id="mwe">
   <div class="modal" style="max-width:640px;">
@@ -553,9 +579,14 @@ hr{border:none;border-top:1px solid var(--border);margin:16px 0;}
       <div class="fi"><label>Datum Eingang</label><input type="date" id="we-dat"></div>
       <div class="fi s2"><label>Bemerkung zur Lieferung</label><textarea id="we-bem" placeholder="z.B. Teillieferung, Rest folgt KW 15" style="min-height:55px;"></textarea></div>
     </div>
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;gap:8px;flex-wrap:wrap;">
       <span style="font-size:11px;text-transform:uppercase;letter-spacing:.6px;color:var(--text3);font-weight:500;">Positionen</span>
-      <button class="btn bg2b sm" onclick="addWEPos()">+ Position</button>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;">
+        <button class="btn bg2b sm" onclick="openWEVorlage()">Vorlage laden</button>
+        <button class="btn bg2b sm" onclick="openWECSV()">Aus Excel</button>
+        <button class="btn bg2b sm" onclick="saveWEVorlage()">Als Vorlage speichern</button>
+        <button class="btn bg2b sm" onclick="addWEPos()">+ Position</button>
+      </div>
     </div>
     <div id="we-pos-list" style="max-height:40vh;overflow-y:auto;padding-right:2px;"></div>
     <div style="margin-top:4px;margin-bottom:4px;">
@@ -604,8 +635,15 @@ hr{border:none;border-top:1px solid var(--border);margin:16px 0;}
       <div class="fi"><label>Status</label><select id="rf-st"></select></div>
       <div class="fi"><label>Zuständig</label><select id="rf-zu"><option value="">— Nicht zugewiesen —</option></select></div>
       <div class="fi s2"><label>Fehlerbeschreibung</label><textarea id="rf-fb" placeholder="Was ist genau das Problem?" style="min-height:70px;"></textarea></div>
-      <div class="fi"><label>Gerät / Artikel</label><input type="text" id="rf-gr" placeholder="z.B. Samsung Monitor 27&quot;"></div>
+      <div class="fi">
+        <label>Gerät / Artikel</label>
+        <div style="display:flex;gap:6px;">
+          <input type="text" id="rf-gr" placeholder="z.B. Samsung Monitor 27&quot;" style="flex:1;">
+          <button class="btn bg2b sm" style="flex-shrink:0;" onclick="openLager4RMA()">⌕ Lager</button>
+        </div>
+      </div>
       <div class="fi"><label>Marke</label><input type="text" id="rf-mk" placeholder="Samsung"></div>
+      <input type="hidden" id="rf-lid" value="">
       <div class="fi"><label>Artikelnummer</label><input type="text" id="rf-an"></div>
       <div class="fi"><label>Seriennummer</label><input type="text" id="rf-sn"></div>
       <div class="fi"><label>Garantie</label>
@@ -643,6 +681,7 @@ hr{border:none;border-top:1px solid var(--border);margin:16px 0;}
     <div id="mrfd-c"></div>
     <div class="brow" style="margin-top:16px;">
       <button class="btn bg2b" onclick="cM('mrfd')">Schliessen</button>
+      <button class="btn bg2b" id="mrfd-pdf">Begleitschein PDF</button>
       <button class="btn bp" id="mrfd-edit">Bearbeiten</button>
     </div>
   </div>
@@ -719,7 +758,7 @@ function showTab(p,b){
   document.getElementById(b).classList.add('active');
   if(p==='lager'){rlager();rStats();}
   if(p==='archiv')loadArc();
-  if(p==='admin'){loadU();loadKL();}
+  if(p==='admin'){loadU();loadKL();loadVorlagen().then(()=>rVorlagen());}
   if(p==='reparatur')loadRMA();
   if(p==='wareneingang')loadWE();
 }
@@ -877,8 +916,10 @@ function rML(){
     return`<div class="li" style="cursor:pointer;" onclick="aFL('${a.id}')"><div class="lil"><div class="lik">${a.beschreibung}</div><div class="lim">${[a.typ,a.marke].filter(Boolean).join(' · ')} · <span style="color:${low?'var(--red)':'var(--green)'};font-weight:500;">${a.bestand} ${a.einheit||'Stk'}</span></div></div><div style="font-family:'DM Mono',monospace;font-size:14px;color:var(--accent);flex-shrink:0;">CHF ${Number(a.verkaufspreis).toFixed(2)}</div></div>`;
   }).join('')||'<div style="color:var(--text3);font-size:13px;">Keine Artikel.</div>';
 }
+let lagerCB=null;
 function aFL(id){
   const a=LA.find(x=>x.id===id);if(!a)return;
+  if(lagerCB){const cb=lagerCB;lagerCB=null;cM('ml');cb(a);return;}
   if(a.bestand<=0&&!confirm(`"${a.beschreibung}" ist nicht auf Lager. Trotzdem hinzufügen?`))return;
   addRow({typ:a.typ||'',mrk:a.marke||'',dsc:a.beschreibung,prc:a.verkaufspreis,anz:1,lid:a.id});
   cM('ml');toast(a.beschreibung+' hinzugefügt','ok');
@@ -1242,8 +1283,9 @@ function addWEPos(p){
   const div=document.createElement('div');
   div.id='we-pr-'+i;div.className='we-pr';
   div.innerHTML=`
-    <div style="display:grid;grid-template-columns:1fr auto;gap:8px;align-items:start;margin-bottom:8px;">
-      <input id="wp-bez-${i}" type="text" placeholder="Bezeichnung *" value="${p?.bezeichnung||''}">
+    <div style="display:flex;gap:6px;align-items:start;margin-bottom:8px;">
+      <input id="wp-bez-${i}" type="text" placeholder="Bezeichnung *" value="${p?.bezeichnung||''}" style="flex:1;">
+      <button class="btn bg2b sm" style="flex-shrink:0;" title="Aus Lager verknüpfen" onclick="openLager4WE(${i})">⌕</button>
       <button class="btn bd sm" style="flex-shrink:0;padding:9px 10px;" onclick="document.getElementById('we-pr-${i}').remove()">✕</button>
     </div>
     <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:0;">
@@ -1261,6 +1303,7 @@ function addWEPos(p){
       <button class="sb2" data-st="beschaedigt" onclick="setWPS(${i},'beschaedigt')">⚠ Schaden</button>
     </div>
     <input type="hidden" id="wp-st-${i}" value="${p?.status||'erhalten'}">
+    <input type="hidden" id="wp-lid-${i}" value="${p?.lager_id||''}">
     <input id="wp-bem-${i}" type="text" placeholder="Bemerkung zur Position..." style="margin-top:8px;font-size:13px;" value="${p?.bemerkung||''}">`;
   if(p?.einheit){const sel=div.querySelector(`#wp-ei-${i}`);if(sel)sel.value=p.einheit;}
   document.getElementById('we-pos-list').appendChild(div);
@@ -1287,6 +1330,7 @@ function collectWEPos(){
       menge_erhalten:parseFloat(document.getElementById('wp-me-'+i)?.value)||null,
       einheit:document.getElementById('wp-ei-'+i)?.value||'Stk',
       status:document.getElementById('wp-st-'+i)?.value||'erhalten',
+      lager_id:document.getElementById('wp-lid-'+i)?.value||null,
       bemerkung:document.getElementById('wp-bem-'+i)?.value||null,
       reihenfolge:idx
     };
@@ -1324,6 +1368,11 @@ async function saveWE(){
     await db.from('wareneingang_positionen').insert(pos.map(p=>({...p,eingang_id:eid})));
   }
   cM('mwe');await loadWE();
+  const toBook=pos.filter(p=>p.lager_id&&p.status==='erhalten'&&(p.menge_erhalten||0)>0);
+  if(toBook.length&&confirm(`${toBook.length} Position(en) mit Lagerverknüpfung als "Erhalten" markiert.\n\nSoll der Lagerbestand entsprechend erhöht werden?`)){
+    for(const p of toBook){const a=LA.find(x=>x.id===p.lager_id);if(a)await db.from('lager').update({bestand:a.bestand+p.menge_erhalten}).eq('id',p.lager_id);}
+    await loadLA();toast('Lagerbestand aktualisiert','ok');
+  }
 }
 
 async function delWE(){
@@ -1471,6 +1520,7 @@ function openRF(id){
   document.getElementById('rf-rn').value=f?.rma_nummer||'';
   document.getElementById('rf-tr').value=f?.versand_tracking||'';
   document.getElementById('rf-vb').value='';
+  document.getElementById('rf-lid').value=f?.lager_id||'';
   document.getElementById('rf-ga').value=f?.garantie||'unbekannt';
   document.getElementById('rf-dd').value=f?.datum_defekt||'';
   document.getElementById('rf-de').value=f?.datum_eingeschickt||'';
@@ -1542,6 +1592,7 @@ async function saveRF(){
     reparaturkosten:rfTyp_==='extern'?(parseFloat(document.getElementById('rf-rk').value)||null):null,
     transportkosten:rfTyp_==='extern'?(parseFloat(document.getElementById('rf-tk').value)||null):null,
     abgeschlossen:isAbs,abgeschlossen_am:isAbs?new Date().toISOString():null,
+    lager_id:document.getElementById('rf-lid')?.value||null,
     geaendert_am:new Date().toISOString(),geaendert_von:CU?.name||''
   };
   let fallId=eRF;
@@ -1622,7 +1673,120 @@ async function openRFD(id){
   }
   document.getElementById('mrfd-c').innerHTML=h;
   document.getElementById('mrfd-edit').onclick=()=>{cM('mrfd');openRF(id);};
+  document.getElementById('mrfd-pdf').onclick=()=>rmaBegleitschein(f);
   oM('mrfd');
+}
+
+// WE: LAGER PICKER FÜR POSITION
+function openLager4WE(i){
+  lagerCB=(a)=>{
+    const bez=document.getElementById('wp-bez-'+i),art=document.getElementById('wp-art-'+i);
+    const lid=document.getElementById('wp-lid-'+i),ei=document.getElementById('wp-ei-'+i);
+    if(bez)bez.value=a.beschreibung;if(art)art.value=a.artikelnummer||'';
+    if(lid)lid.value=a.id;if(ei&&a.einheit)ei.value=a.einheit;
+    toast(a.beschreibung+' verknüpft','ok');
+  };
+  rML();oM('ml');
+}
+
+// RMA: LAGER PICKER
+function openLager4RMA(){
+  lagerCB=(a)=>{
+    document.getElementById('rf-gr').value=a.beschreibung||'';
+    document.getElementById('rf-mk').value=a.marke||'';
+    document.getElementById('rf-an').value=a.artikelnummer||'';
+    document.getElementById('rf-lid').value=a.id;
+    toast(a.beschreibung+' verknüpft','ok');
+  };
+  rML();oM('ml');
+}
+
+// WE: PROJEKTVORLAGEN
+let WEVL=[];
+async function loadVorlagen(){
+  const{data}=await db.from('we_vorlagen').select('*').order('name');
+  WEVL=data||[];
+}
+function rVorlagen(){
+  const el=document.getElementById('vlist');if(!el)return;
+  if(!WEVL.length){el.innerHTML='<div style="color:var(--text3);font-size:13px;">Keine Vorlagen vorhanden.</div>';return;}
+  el.innerHTML=WEVL.map(v=>`<div class="ui"><div class="uii"><div class="uin">${v.name}</div><div class="uim">${Array.isArray(v.positionen)?v.positionen.length+' Positionen':'—'} · Erstellt von ${v.erstellt_von||'—'}</div></div><button class="btn bd sm" onclick="deleteVorlage('${v.id}')">Löschen</button></div>`).join('');
+}
+function openWEVorlage(){
+  loadVorlagen().then(()=>{
+    const el=document.getElementById('wev-list');
+    if(!WEVL.length){el.innerHTML='<div style="color:var(--text3);font-size:13px;padding:8px 0;">Keine Vorlagen vorhanden.<br>Zuerst eine Lieferung erfassen und "Als Vorlage speichern" klicken.</div>';}
+    else{el.innerHTML=WEVL.map(v=>`<div class="li" style="cursor:pointer;" onclick="applyWEVorlage('${v.id}')"><div class="lil"><div class="lik">${v.name}</div><div class="lim">${Array.isArray(v.positionen)?v.positionen.length+' Positionen':'—'}</div></div><div class="lir"><button class="btn bg2b sm" onclick="event.stopPropagation();applyWEVorlage('${v.id}')">Laden</button></div></div>`).join('');}
+    oM('mwev');
+  });
+}
+function applyWEVorlage(id){
+  const v=WEVL.find(x=>x.id===id);if(!v)return;
+  const pos=Array.isArray(v.positionen)?v.positionen:[];
+  document.getElementById('we-pos-list').innerHTML='';wePosIdx=0;
+  pos.forEach(p=>addWEPos({bezeichnung:p.bezeichnung,artikelnummer:p.artikelnummer,menge_bestellt:p.menge_bestellt,einheit:p.einheit,status:'erhalten'}));
+  if(!pos.length)addWEPos();
+  cM('mwev');toast(v.name+' geladen ('+pos.length+' Positionen)','ok');
+}
+async function saveWEVorlage(){
+  const pos=collectWEPos();
+  if(!pos.length){toast('Keine Positionen vorhanden','er');return;}
+  const name=prompt('Vorlagenname (z.B. Projektname oder Materialpaket):','');
+  if(!name||!name.trim())return;
+  const{error}=await db.from('we_vorlagen').insert({name:name.trim(),positionen:pos.map(p=>({bezeichnung:p.bezeichnung,artikelnummer:p.artikelnummer,menge_bestellt:p.menge_bestellt,einheit:p.einheit})),erstellt_am:new Date().toISOString(),erstellt_von:CU?.name||''});
+  if(error){toast('Fehler beim Speichern','er');console.error(error);return;}
+  toast('"'+name.trim()+'" als Vorlage gespeichert','ok');
+  await loadVorlagen();
+}
+async function deleteVorlage(id){
+  if(!confirm('Vorlage löschen?'))return;
+  await db.from('we_vorlagen').delete().eq('id',id);
+  await loadVorlagen();rVorlagen();toast('Vorlage gelöscht','ok');
+}
+
+// WE: CSV/EXCEL IMPORT
+function openWECSV(){document.getElementById('wec-txt').value='';oM('mwec');}
+function importWECSV(){
+  const raw=document.getElementById('wec-txt').value.trim();
+  if(!raw){toast('Keine Daten eingefügt','er');return;}
+  const lines=raw.split('\n').filter(l=>l.trim());
+  let count=0;
+  lines.forEach(line=>{
+    const parts=line.includes('\t')?line.split('\t'):line.split(';');
+    const bez=(parts[0]||'').trim();
+    if(!bez||bez.toLowerCase()==='bezeichnung')return;
+    addWEPos({bezeichnung:bez,artikelnummer:(parts[1]||'').trim()||null,menge_bestellt:parseFloat((parts[2]||'').trim())||null,einheit:(parts[3]||'Stk').trim()||'Stk',status:'erhalten'});
+    count++;
+  });
+  cM('mwec');toast(count+' Position(en) importiert','ok');
+}
+
+// RMA: BEGLEITSCHEIN PDF
+function rmaBegleitschein(f){
+  const{jsPDF}=window.jspdf;const doc=new jsPDF({unit:'mm',format:'a4'});const W=210,mg=18;let y=20;
+  doc.setFont('helvetica','bold');doc.setFontSize(16);doc.text('RMA-Begleitschein',mg,y);
+  doc.setFont('helvetica','normal');doc.setFontSize(9);doc.setTextColor(120);
+  doc.text('ottiger media systeme ag',W-mg,y,{align:'right'});y+=5;
+  doc.setTextColor(0);doc.setFontSize(8);doc.text('Datum: '+new Date().toLocaleDateString('de-CH'),W-mg,y,{align:'right'});y+=10;
+  doc.setDrawColor(200);doc.line(mg,y,W-mg,y);y+=8;
+  doc.setFont('helvetica','bold');doc.setFontSize(11);doc.text(f.titel||'—',mg,y);y+=6;
+  doc.setFont('helvetica','normal');doc.setFontSize(9);doc.setTextColor(100);
+  doc.text('Typ: '+(f.typ==='extern'?'Extern / RMA':'Intern')+' | Status: '+rmaStatusLabel(f.status),mg,y);
+  doc.setTextColor(0);y+=8;
+  const fl=[['Gerät / Artikel',f.geraet],['Marke',f.marke],['Artikelnummer',f.artikelnummer],['Seriennummer',f.seriennummer],['Garantie',{ja:'Ja (unter Garantie)',nein:'Nein',unbekannt:'Unbekannt'}[f.garantie]||''],['Datum Defekt',f.datum_defekt],['Kunde',f.kunde],['Projektnummer',f.projektnummer]];
+  doc.setFontSize(9);
+  fl.forEach(([l,v])=>{if(!v)return;doc.setFont('helvetica','bold');doc.text(l+':',mg,y);doc.setFont('helvetica','normal');doc.text(String(v),mg+44,y);y+=5;});
+  if(f.fehlerbeschreibung){y+=2;doc.setFont('helvetica','bold');doc.text('Fehlerbeschreibung:',mg,y);y+=5;doc.setFont('helvetica','normal');const ls=doc.splitTextToSize(f.fehlerbeschreibung,W-2*mg);doc.text(ls,mg,y);y+=ls.length*5+4;}
+  if(f.typ==='extern'&&(f.lieferant||f.rma_nummer)){
+    y+=3;doc.setDrawColor(200);doc.line(mg,y,W-mg,y);y+=6;
+    doc.setFont('helvetica','bold');doc.setFontSize(10);doc.text('RMA-Angaben',mg,y);y+=6;doc.setFontSize(9);
+    [['Lieferant / Hersteller',f.lieferant],['RMA-Nummer',f.rma_nummer],['Datum eingeschickt',f.datum_eingeschickt],['Trackingnummer',f.versand_tracking]].forEach(([l,v])=>{if(!v)return;doc.setFont('helvetica','bold');doc.text(l+':',mg,y);doc.setFont('helvetica','normal');doc.text(String(v),mg+44,y);y+=5;});
+  }
+  if(f.bemerkung){y+=2;doc.setFont('helvetica','bold');doc.setFontSize(9);doc.text('Bemerkung:',mg,y);y+=5;doc.setFont('helvetica','normal');const ls=doc.splitTextToSize(f.bemerkung,W-2*mg);doc.text(ls,mg,y);}
+  y=270;doc.setDrawColor(200);doc.line(mg,y,W-mg,y);y+=5;
+  doc.setFontSize(8);doc.setTextColor(150);doc.text('Erstellt: '+new Date().toLocaleString('de-CH')+' | '+( f.erstellt_von||'—')+' | ottiger media systeme ag',mg,y);
+  doc.save('RMA_Begleitschein_'+(f.titel||'OMS').replace(/[^\w\s-]/g,'_').substring(0,40)+'.pdf');
+  toast('Begleitschein exportiert!','ok');
 }
 
 // RESET
